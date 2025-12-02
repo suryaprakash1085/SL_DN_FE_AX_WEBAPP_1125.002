@@ -902,6 +902,7 @@ export default function Inventory() {
                           )}
                         </TableCell> */}
 
+
                         <TableCell>
                           {editRowId === row.inventory_id ? (
                             <Select
@@ -925,6 +926,7 @@ export default function Inventory() {
                           ) : (
                             row.uom || "N/A"
                           )}
+                          
                         </TableCell>
 
                         <TableCell>
