@@ -40,7 +40,7 @@ const PrList = () => {
   }, []);
 
   const handleRowClick = (prNo) => {
-    router.push(`/app/inventoryActivity/goodsreceipt/${prNo}`);
+    router.push(`/views/inventoryActivity/goodsreceipt/${prNo}`);
   };
 
   return (
@@ -61,7 +61,7 @@ const PrList = () => {
             color: "black",
             "&:hover": { backgroundColor: "white", color: "black" },
           }}
-          onClick={() => router.push("/app/inventoryActivity/goodsreceipt/new")}
+          onClick={() => router.push("/views/inventoryActivity/goodsreceipt/new")}
         >
           <AddIcon />
         </IconButton>

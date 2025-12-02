@@ -16,12 +16,12 @@ const allTiles = [
   {
     name: "Suppliers",
     img: "/icons/supplier.png",
-    route: "/app/inventory/suppliers",
+    route: "/views/inventory/suppliers",
   },
   {
     name: "Products",
     img: "/icons/material.png",
-    route: "/app/inventory/products",
+    route: "/views/inventory/products",
   },
   // {
   //   name: "Movement",

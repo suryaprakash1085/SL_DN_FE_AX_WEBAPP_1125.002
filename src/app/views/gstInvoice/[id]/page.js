@@ -155,7 +155,7 @@ export default function InvoiceDetails() {
 
   const sendtomainpage = () => {
     // navigate to main page
-    router.push("/app/");
+    router.push("/views/");
   };
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
@@ -2357,7 +2357,7 @@ export default function InvoiceDetails() {
               setOpenConformationModal(false);
 
               setTimeout(() => {
-                router.push("/app/invoiceList");
+                router.push("/views/invoiceList");
               }, 1500);
             }}
             color="success"

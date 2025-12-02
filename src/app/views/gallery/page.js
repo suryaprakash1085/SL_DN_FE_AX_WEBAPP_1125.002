@@ -225,7 +225,7 @@ export default function Gallery() {
           .map((category) => (
             <StyledCard 
               key={category.id} 
-              onClick={() => router.push(`/app/gallery/${category.id}`)}
+              onClick={() => router.push(`/views/gallery/${category.id}`)}
             >
               <CategoryImage src={`${process.env.NEXT_PUBLIC_API_URL}/category/image/file/${category.image}`} alt={category.name} />
               <CategoryName>{category.name}</CategoryName>

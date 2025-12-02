@@ -436,7 +436,7 @@ const handleFinishJob = async (
   selectedMechanic
 ) => {
   if (isJobCompleted) {
-    router.push("/app/serviceCenter");
+    router.push("/views/serviceCenter");
     return;
   }
   try {
@@ -484,7 +484,7 @@ const handleFinishJob = async (
       sendWhatsappMessage(fromNumber, toNumber, message, type, file, caption);
     }
     setTimeout(() => {
-      router.push("/app/serviceCenter");
+      router.push("/views/serviceCenter");
     }, 2000);
   } catch (err) {
     console.log("Error marking job as Inspection:", err);

@@ -378,7 +378,7 @@ export default function InvoiceDetails() {
     });
 
     setTimeout(() => {
-      router.push(`/app/`);
+      router.push(`/views/`);
     }, 1000);
   };
 

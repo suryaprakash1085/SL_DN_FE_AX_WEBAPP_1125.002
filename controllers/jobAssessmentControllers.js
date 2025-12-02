@@ -100,7 +100,7 @@ export const handleCloseAppointmentEditModal = (
 
 export const handleCardClick = (router, appointmentId) => {
   // console.log("Appointment ID:", appointmentId);
-  router.push(`/app/jobAssessment/${appointmentId}`);
+  router.push(`/views/jobAssessment/${appointmentId}`);
 };
 
 export const handleEditClick = (

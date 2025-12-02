@@ -57,7 +57,7 @@ export const handleOptionChange = (event, setSelectedOption, setSearchText, setF
 };
 
 export const handleRowClick = (vehicleId, router) => {
-  router.push(`/app/finance/customerPayment/${vehicleId}`);
+  router.push(`/views/finance/customerPayment/${vehicleId}`);
 };
 
 export const getDisplayPayments = (filteredPayments, uniqueVehiclePayments) => {

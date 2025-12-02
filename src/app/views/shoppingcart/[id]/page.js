@@ -541,7 +541,7 @@ export default function CustomerDetail() {
         upi: upiDetails.pa
       });
 
-      router.push(`/app/`);
+      router.push(`/views/`);
     } catch (error) {
       console.error("Error generating PDF:", error);
       showSnackbarAlert("Error generating PDF", "error");

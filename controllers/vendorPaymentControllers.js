@@ -50,7 +50,7 @@ export const handleOptionChange = (event, setSelectedOption, setSearchText, setF
 };
 
 export const handleRowClick = (vehicleId, router) => {
-  router.push(`/app/finance/vendorPayment/${vehicleId}`);
+  router.push(`/views/finance/vendorPayment/${vehicleId}`);
 };
 
 export const getDisplayPayments = (filteredPayments, uniqueVehiclePayments) => {

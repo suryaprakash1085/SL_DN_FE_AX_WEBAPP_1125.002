@@ -419,7 +419,7 @@ export default function SupplierDetail() {
                     <IconButton
                       size="small"
                       onClick={() =>
-                        router.push(`/app/VendorOutstand?id=${id}`)
+                        router.push(`/views/VendorOutstand?id=${id}`)
                       }
                     >
                       <InfoOutlinedIcon color="primary" />
@@ -555,7 +555,7 @@ export default function SupplierDetail() {
           <Button
             onClick={() => {
               if (appointmentId) {
-                router.push(`/app/jobCard/${appointmentId}`);
+                router.push(`/views/jobCard/${appointmentId}`);
               } else {
                 console.log("No appointment ID available for redirection");
                 setSnackbarMessage(

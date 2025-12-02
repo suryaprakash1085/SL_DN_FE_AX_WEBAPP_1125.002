@@ -1740,7 +1740,7 @@ const CustomerDetail = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      <Link target="_blank" href={`/app/purchase/`} style={{ textDecoration: "none", color: "inherit" }}>
+                      <Link target="_blank" href={`/views/purchase/`} style={{ textDecoration: "none", color: "inherit" }}>
                         PR No: {commonPrNo}
                       </Link>
                     </Typography>

@@ -600,7 +600,7 @@ export default function Purchase() {
       setSnackbarOpen(true);
       setTimeout(() => {
         // window.location.reload();
-        router.push("/app/inventoryActivity/goodsreceipt");
+        router.push("/views/inventoryActivity/goodsreceipt");
       }, 1000);
       // Update the state to remove the deleted procurement
       setPrList(prList.filter((pr) => pr._id !== id));
@@ -856,7 +856,7 @@ export default function Purchase() {
 
         // Refresh the page after 4 seconds
         setTimeout(() => {
-          router.push("/app/inventoryActivity/goodsreceipt");
+          router.push("/views/inventoryActivity/goodsreceipt");
           // window.location.reload();
         }, 1000);
       } catch (error) {
@@ -943,7 +943,7 @@ export default function Purchase() {
 
       // Refresh the page after a short delay
       setTimeout(() => {
-        router.push("/app/inventoryActivity/goodsreceipt");
+        router.push("/views/inventoryActivity/goodsreceipt");
         // window.location.reload();
       }, 1000);
     } catch (error) {

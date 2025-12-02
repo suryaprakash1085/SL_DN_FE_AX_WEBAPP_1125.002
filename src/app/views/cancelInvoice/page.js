@@ -71,7 +71,7 @@ export default function InvoiceList() {
   };
 
   const handleCardClick = (appointmentId) => {
-    router.push(`/app/cancelInvoice/${appointmentId}`);
+    router.push(`/views/cancelInvoice/${appointmentId}`);
   };
 
   return (

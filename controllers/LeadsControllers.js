@@ -407,7 +407,7 @@ const convertToCustomer = async (token, router, row, user) => {
       });
     } else if (addLeadResponse.status === 200) {
       // console.log("Success: Lead converted to customer");
-      router.push(`/app/customer/${custid}`);
+      router.push(`/views/customer/${custid}`);
     } else if (addLeadResponse.status === 500) {
       // console.log("Error: Internal Server Error");
       showAlert({

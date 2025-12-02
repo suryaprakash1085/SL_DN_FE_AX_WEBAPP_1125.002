@@ -83,5 +83,5 @@ export const handleKeyPress = (event, handleSearch) => {
 // Function to handle card click
 export const handleCardClick = (router, appointmentId) => {
   // console.log("Appointment ID:", appointmentId);
-  router.push(`/app/serviceInspection/${appointmentId}`);
+  router.push(`/views/serviceInspection/${appointmentId}`);
 };

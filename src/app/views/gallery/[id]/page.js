@@ -195,7 +195,7 @@ export default function SubcategoryPage() {
       {/* Display existing subcategories */}
       <Box display="flex" flexWrap="wrap" justifyContent="center">
         {subcategories.map((subcategory) => (
-          <StyledCard key={subcategory.id} onClick={() => router.push(`/app/gallery/${id}/${subcategory.id}`)}>
+          <StyledCard key={subcategory.id} onClick={() => router.push(`/views/gallery/${id}/${subcategory.id}`)}>
             <CardMedia
               component="img"
               height="200px"

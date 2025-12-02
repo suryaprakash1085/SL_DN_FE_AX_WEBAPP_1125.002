@@ -1537,7 +1537,7 @@ export default function InvoiceDetails() {
                           setOpenSnackbar(true);
                           setInvoiceId("");
                           setTimeout(() => {
-                            router.push("/app/");
+                            router.push("/views/");
                           }, 1500);
                         } catch (error) {
                           console.error("Error in cancel invoice:", error);

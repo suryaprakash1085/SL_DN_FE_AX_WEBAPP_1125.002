@@ -89,9 +89,12 @@ export const handleCloseAppointmentEditModal = (
   setAppointmentEditModalOpen(false);
 };
 
-export const handleCardClick = (router, appointmentId) => {
+export const handleCardClick = (router, 
+  
+  
+) => {
   console.log("Appointment ID:", appointmentId);
-  router.push(`/app/stats/${appointmentId}`);
+  router.push(`/views/stats/${appointmentId}`);
 };
 
 export const handleEditClick = (

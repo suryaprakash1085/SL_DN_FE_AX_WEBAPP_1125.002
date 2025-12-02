@@ -540,7 +540,7 @@ export default function CustomerOutstand() {
                           <Button
                             variant="outlined"
                             size="small"
-                            onClick={() => router.push(`/app/finance/customerPayment/?id=${row.customer_id}`)}
+                            onClick={() => router.push(`/views/finance/customerPayment/?id=${row.customer_id}`)}
                           >
                             Pay Now
                           </Button>
@@ -550,7 +550,7 @@ export default function CustomerOutstand() {
                           <RemoveRedEyeIcon
                             style={{ cursor: "pointer" }}
                             variant="outlined"
-                            onClick={() => router.push(`/app/finance/customerPayment/?id=${row.customer_id}`)}
+                            onClick={() => router.push(`/views/finance/customerPayment/?id=${row.customer_id}`)}
                           />
                         </TableCell>
                       )}

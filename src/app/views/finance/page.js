@@ -18,17 +18,17 @@ const allTiles = [
   {
     name: "Customers",
     img: "/icons/customerPayment.png",
-    route: "/app/finance/customerPayment",
+    route: "/views/finance/customerPayment",
   },
   {
     name: "Supplier",
     img: "/icons/supp1.png",
-    route: "/app/finance/vendorPayment",
+    route: "/views/finance/vendorPayment",
   },
   {
     name: "Ledger Book",
     img: "/icons/expense.png",
-    route: "/app/finance/ledgerBook",
+    route: "/views/finance/ledgerBook",
   },
 ];
 

@@ -556,7 +556,7 @@ const handleFinishJob = async (
     });
 
     setTimeout(() => {
-      router.push("/app/serviceCenter");
+      router.push("/views/serviceCenter");
     }, 2000);
   } catch (err) {
     console.log("Error marking job as completed:", err);

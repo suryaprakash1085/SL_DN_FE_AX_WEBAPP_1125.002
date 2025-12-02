@@ -416,7 +416,7 @@ export default function CustomerDetail() {
     try {
       const counterSaleData = await generate_counter();
       if (counterSaleData) {
-        router.push(`/app/shoppingcart/${counterSaleData.appointment_id}`);
+        router.push(`/views/shoppingcart/${counterSaleData.appointment_id}`);
       } else {
         setSnackbarMessage("Failed to generate counter sale.");
         setSnackbarSeverity("error");

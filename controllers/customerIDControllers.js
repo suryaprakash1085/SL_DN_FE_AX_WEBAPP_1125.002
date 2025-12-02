@@ -366,7 +366,7 @@ export const handleAddAppointment = async (
         setNotes("");
 
         // Redirect to the appointment inspection page with the appointment ID
-        router.push(`/app/jobCard/${AppointmentId}`);
+        router.push(`/views/jobCard/${AppointmentId}`);
       } else {
         console.log("Appointment ID not found in response");
         setSnackbarMessage("Failed to retrieve appointment ID.");

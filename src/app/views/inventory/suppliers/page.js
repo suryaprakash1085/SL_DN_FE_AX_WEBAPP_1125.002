@@ -139,7 +139,7 @@ export default function UserEntry() {
   };
 
   const handleCardClick = (supplierId) => {
-    router.push(`/app/inventory/suppliers/${supplierId}`);
+    router.push(`/views/inventory/suppliers/${supplierId}`);
   };
 
   const handleOpenModal = () => {

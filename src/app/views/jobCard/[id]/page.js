@@ -1080,7 +1080,7 @@ const CustomerDetail = () => {
       }
       setTimeout(() => {
         // window.location.reload();
-        router.push(`/app/`);
+        router.push(`/views/`);
       }, 2000);
     }
   };
@@ -2049,7 +2049,7 @@ const CustomerDetail = () => {
                     >
                       <Link
                         target="_blank"
-                        href={`/app/purchase/`}
+                        href={`/views/purchase/`}
                         style={{ textDecoration: "none", color: "inherit" }}
                       >
                         PR No: {commonPrNo}
