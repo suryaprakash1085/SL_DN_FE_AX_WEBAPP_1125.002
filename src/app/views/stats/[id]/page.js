@@ -661,7 +661,7 @@ const CustomerDetail = () => {
     // refresh the page only if success
     if (response.ok) {
       // window.location.reload();
-      router.push(`/app/`);
+      router.push(`/views/`);
     }
   };
 

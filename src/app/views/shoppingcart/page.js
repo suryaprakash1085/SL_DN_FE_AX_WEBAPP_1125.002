@@ -97,7 +97,7 @@ const CustomerTable = () => {
     const saleData = {};
     const newId = await createCounterSale(saleData, Cookies.get("token"));
     if (newId) {
-      router.push(`/app/shoppingcart/${newId}`);
+      router.push(`/views/shoppingcart/${newId}`);
     } else {
       setSnackbar({
         open: true,
@@ -174,7 +174,7 @@ const CustomerTable = () => {
                 <TableRow
                   key={index}
                   onClick={() =>
-                    router.push(`/app/shoppingcart/${row.appointment_id}`)
+                    router.push(`/views/shoppingcart/${row.appointment_id}`)
                   }
                   style={{ cursor: "pointer" }}
                 >

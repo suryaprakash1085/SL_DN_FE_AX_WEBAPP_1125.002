@@ -326,7 +326,7 @@ export default function AddSupplier({
       console.log("API Response Data:", data);
       const AppointmentId = data.AppointmentsArray.appointment_id;
       console.log("Apmid", AppointmentId);
-      router.push(`/app/jobCard/${AppointmentId}`);
+      router.push(`/views/jobCard/${AppointmentId}`);
     } catch (err) {
       // setError(err.message);
       setSnackbarMessage("Failed to add appointment. Please try again.");

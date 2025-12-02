@@ -71,7 +71,7 @@ export default function InvoiceList() {
   };
 
   const handleCardClick = (appointmentId) => {
-    router.push(`/app/invoiceList/${appointmentId}`);
+    router.push(`/views/invoiceList/${appointmentId}`);
   };
 
   return (

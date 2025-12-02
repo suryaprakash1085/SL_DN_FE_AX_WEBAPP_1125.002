@@ -432,7 +432,7 @@ export default function AddCustomer({ onSuccess, onClose }) {
 
             const counterData = await counterSaleResult.json();
             if (counterData) {
-              router.push(`/app/shoppingcart/${counterData.appointment_id}`);
+              router.push(`/views/shoppingcart/${counterData.appointment_id}`);
             }
           } else {
             // For regular customers, handle appointment and redirect
@@ -539,7 +539,7 @@ export default function AddCustomer({ onSuccess, onClose }) {
       console.log({ apppaignaofng: data });
 
       const AppointmentId = data.AppointmentsArray.appointment_id;
-      router.push(`/app/jobCard/${AppointmentId}`);
+      router.push(`/views/jobCard/${AppointmentId}`);
     } catch (err) {
       setSnackbarMessage("Failed to add appointment. Please try again.");
     }

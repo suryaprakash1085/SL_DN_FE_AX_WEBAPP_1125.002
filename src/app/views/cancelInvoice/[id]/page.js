@@ -137,7 +137,7 @@ export default function InvoiceDetails() {
 
   const sendtomainpage = () => {
     // navigate to main page
-    router.push("/app/");
+    router.push("/views/");
   };
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {

@@ -480,7 +480,7 @@ export default function AddCustomer({ onSuccess, onClose, typedname, setTypednam
             console.log({ apppaignaofng: data });
 
             const AppointmentId = data.AppointmentsArray.appointment_id;
-            router.push(`/app/jobCard/${AppointmentId}`);
+            router.push(`/views/jobCard/${AppointmentId}`);
         } catch (err) {
             setSnackbarMessage("Failed to add appointment. Please try again.");
         }

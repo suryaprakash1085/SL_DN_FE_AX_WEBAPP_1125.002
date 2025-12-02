@@ -803,7 +803,7 @@ const CustomerDetail = () => {
       }
       setTimeout(() => {
         // window.location.reload();
-        router.push(`/app/`);
+        router.push(`/views/`);
       }, 2000);
     }
   };

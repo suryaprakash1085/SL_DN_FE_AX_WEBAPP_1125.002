@@ -1040,7 +1040,7 @@ function VendorOutstandContent() {
                           <InfoOutlinedIcon
                             // show only if contains credit
                             size="small"
-                            onClick={() => router.push(`/app/finance/vendorPayment/${row.customer_id}`)}
+                            onClick={() => router.push(`/views/finance/vendorPayment/${row.customer_id}`)}
 
 
                             color="primary" />

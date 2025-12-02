@@ -188,7 +188,7 @@ export default function JobStatus() {
 
   const handleCardClick = (appointmentId) => {
     // console.log("Appointment ID:", appointmentId);
-    router.push(`/app/jobStatus/${appointmentId}`);
+    router.push(`/views/jobStatus/${appointmentId}`);
   };
 
   const groupedEntries = filteredEntries?.reduce((acc, tile) => {
