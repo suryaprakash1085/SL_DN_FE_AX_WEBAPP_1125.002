@@ -25,26 +25,20 @@ import {
   Alert,
 } from "@mui/material";
 
-// Images and icon imports
 import SearchIcon from "@mui/icons-material/Search";
 
 export default function InvoiceList() {
   const router = useRouter();
 
-  // FrontEnd extracted data states
   const [token, setToken] = useState();
-
-  // Backend Data states
   const [entries, setEntries] = useState([]);
   const [originalEntries, setOriginalEntries] = useState([]);
 
-  // Modal and Alert states
   const [loading, setLoading] = useState(true);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState();
   const [snackBarSeverity, setSnackBarSeverity] = useState();
 
-  // FrontEnd form input states
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -74,16 +68,20 @@ export default function InvoiceList() {
     router.push(`/views/cancelInvoice/${appointmentId}`);
   };
 
+  // ✔ Filter: invoiced + not CounterSales
+  const validInvoices = entries.filter(
+    (entry) =>
+      entry.status === "invoiced" &&
+      entry.plateNumber !== "CounterSales"
+  );
+
   return (
     <div>
       <Navbar pageName="Invoice List" />
-      <Box
-        sx={{
-          backgroundSize: "cover",
-          minHeight: "89vh",
-        }}
-      >
+
+      <Box sx={{ backgroundSize: "cover", minHeight: "89vh" }}>
         <Box paddingX="1%">
+          {/* Search bar */}
           <div
             style={{
               display: "flex",
@@ -117,9 +115,11 @@ export default function InvoiceList() {
               />
             </div>
           </div>
+
+          {/* ⬇️ Correct empty logic */}
           {loading ? (
             <p>Loading...</p>
-          ) : entries.length === 0 ? (
+          ) : validInvoices.length === 0 ? (
             <DataNotFound />
           ) : (
             <Box
@@ -128,76 +128,68 @@ export default function InvoiceList() {
               gap={2}
               sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
             >
-              {console.log({ entries })}
-              {entries
-                .filter(
-                  (entry) =>
-                    entry.status === "invoiced" &&
-                    entry.plateNumber != "CounterSales"
-                )
-                .map((entry) => (
+              {validInvoices.map((entry) => (
+                <motion.div
+                  key={entry._id}
+                  className="box"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1, ease: [0, 0.71, 0.2, 1.01] }}
+                >
                   <motion.div
-                    key={entry._id}
-                    className="box"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1, ease: [0, 0.71, 0.2, 1.01] }}
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => handleCardClick(entry.appointment_id)}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      onClick={() => handleCardClick(entry.appointment_id)}
+                    <Card
+                      sx={{
+                        height: "110px",
+                        cursor: "pointer",
+                        width: "160px",
+                        borderRadius: "20px",
+                        position: "relative",
+                        padding: "10px 20px 20px 20px",
+                        textAlign: "left",
+                        boxShadow: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      <Card
-                        sx={{
-                          height: "110px",
-                          cursor: "pointer",
-                          width: "160px",
-                          borderRadius: "20px",
-                          position: "relative",
-                          padding: "10px 20px 20px 20px",
-                          textAlign: "left",
-                          boxShadow: 3,
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Box sx={{ fontSize: "0.9rem" }}>
-                          <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{ marginBottom: "10px" }}
-                          >
-                            {entry.plateNumber || entry.vehicle_id}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Date:{" "}
-                            {new Date(
-                              entry.appointment_date
-                            ).toLocaleDateString()}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Time: {entry.appointment_time}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Status: {entry.status}
-                          </Typography>
-                        </Box>
-                      </Card>
-                    </motion.div>
+                      <Box sx={{ fontSize: "0.9rem" }}>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{ marginBottom: "10px" }}
+                        >
+                          {entry.plateNumber || entry.vehicle_id}
+                        </Typography>
+
+                        <Typography variant="body2" color="text.secondary">
+                          Date:{" "}
+                          {new Date(
+                            entry.appointment_date
+                          ).toLocaleDateString()}
+                        </Typography>
+
+                        <Typography variant="body2" color="text.secondary">
+                          Time: {entry.appointment_time}
+                        </Typography>
+
+                        <Typography variant="body2" color="text.secondary">
+                          Status: {entry.status}
+                        </Typography>
+                      </Box>
+                    </Card>
                   </motion.div>
-                ))}
+                </motion.div>
+              ))}
             </Box>
           )}
         </Box>
       </Box>
 
-      {/* Snackbar for Error Message */}
-      <Snackbar
-        open={openSnackbar}
-        // autoHideDuration={4000}
-        // onClose={() => handleCloseSnackBar(setOpenSnackbar)}
-      >
+      {/* Snackbar */}
+      <Snackbar open={openSnackbar}>
         <Alert
           onClose={() => handleCloseSnackBar(setOpenSnackbar)}
           severity={snackBarSeverity}

@@ -387,7 +387,7 @@ export default function TimeEntry() {
                                 setSelectedDay,
                                 setIsLeave,
                                 setOpenShiftModal,
-                                setNewShift
+                                setNewShift,
                               )
                             }
                             sx={{ width: "100%", mt: 1 }}

@@ -107,6 +107,21 @@ export default function InvoiceList() {
     router.push(`/views/gstInvoice/${appointmentId}`);
   };
 
+
+  const filteredEntries = entries.filter((entry) => {
+  const match = invoiceEntries.some(
+    (inv) => inv.invoice_id === entry.appointment_id
+  );
+
+  return (
+    match &&
+    entry.plateNumber !== "CounterSales" &&
+    entry.status !== "deleted" &&
+    entry.status === "invoiced"
+  );
+});
+
+
   return (
     <div>
       <Navbar pageName="GST Invoice" />
@@ -152,9 +167,9 @@ export default function InvoiceList() {
           </div>
           {loading ? (
             <p>Loading...</p>
-          ) : entries.length === 0 ? (
-            <DataNotFound />
-          ) : (
+          ) :  filteredEntries.length === 0 ? (
+  <DataNotFound />
+): (
             <Box
               display="flex"
               flexWrap="wrap"

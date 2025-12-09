@@ -201,6 +201,7 @@ export default function SupplierDetail() {
       );
 
       const ledgerData = {
+        id: supplier?.ledger_id,
         customer_id: supplier.supplier_id,
         creation_date: new Date().toISOString().split("T")[0],
         expense_type: "Credit",
@@ -238,6 +239,7 @@ export default function SupplierDetail() {
     }
   };
 
+
   const fetchSupplierDetails = async () => {
     const token = Cookies.get("token");
     try {
@@ -271,7 +273,8 @@ export default function SupplierDetail() {
 
       let res = await response2.json();
 
-      setSupplierOutstanding(res.outstanding);
+      setSupplierOutstandi
+      ng(res.outstanding);
       // setSelectedState(State.getStatesOfCountry("IN").find(state => state.name === data?.contact?.address?.state) || null);
       // console.log("selectedState", selectedState);
       // console.log("data", data.contact.address);

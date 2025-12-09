@@ -74,6 +74,11 @@ export default function InvoiceList() {
     router.push(`/views/invoiceList/${appointmentId}`);
   };
 
+  // ✔ Filter invoiced entries
+  const invoicedEntries = entries.filter(
+    (entry) => entry.status === "invoice"
+  );
+
   return (
     <div>
       <Navbar pageName="Invoice List" />
@@ -117,85 +122,76 @@ export default function InvoiceList() {
               />
             </div>
           </div>
+
+          {/* ✔ Show loading / empty / invoiced results */}
           {loading ? (
             <p>Loading...</p>
-          ) 
-          :entries.length === 0 ? (
-            <DataNotFound/>
-          ) 
-          
-          :  (
+          ) : invoicedEntries.length === 0 ? (
+            <DataNotFound />
+          ) : (
             <Box
               display="flex"
               flexWrap="wrap"
               gap={2}
               sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
             >
-              {entries
-                .filter((entry) => entry.status === "invoice")
-                .map((entry) => (
+              {invoicedEntries.map((entry) => (
+                <motion.div
+                  key={entry._id}
+                  className="box"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1 }}
+                >
                   <motion.div
-                    key={entry._id}
-                    className="box"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1, ease: [0, 0.71, 0.2, 1.01] }}
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => handleCardClick(entry.appointment_id)}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      onClick={() => handleCardClick(entry.appointment_id)}
+                    <Card
+                      sx={{
+                        height: "110px",
+                        cursor: "pointer",
+                        width: "160px",
+                        borderRadius: "20px",
+                        padding: "10px 20px 20px 20px",
+                        boxShadow: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      <Card
-                        sx={{
-                          height: "110px",
-                          cursor: "pointer",
-                          width: "160px",
-                          borderRadius: "20px",
-                          position: "relative",
-                          padding: "10px 20px 20px 20px",
-                          textAlign: "left",
-                          boxShadow: 3,
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Box sx={{ fontSize: "0.9rem" }}>
-                          <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{ marginBottom: "10px" }}
-                          >
-                            {entry.plateNumber || entry.vehicle_id}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Date:{" "}
-                            {new Date(
-                              entry.appointment_date
-                            ).toLocaleDateString()}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Time: {entry.appointment_time}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Status: {entry.status}
-                          </Typography>
-                        </Box>
-                      </Card>
-                    </motion.div>
+                      <Box sx={{ fontSize: "0.9rem" }}>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          sx={{ marginBottom: "10px" }}
+                        >
+                          {entry.plateNumber || entry.vehicle_id}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Date:{" "}
+                          {new Date(
+                            entry.appointment_date
+                          ).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Time: {entry.appointment_time}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Status: {entry.status}
+                        </Typography>
+                      </Box>
+                    </Card>
                   </motion.div>
-                ))}
+                </motion.div>
+              ))}
             </Box>
           )}
         </Box>
       </Box>
 
       {/* Snackbar for Error Message */}
-      <Snackbar
-        open={openSnackbar}
-        // autoHideDuration={4000}
-        // onClose={() => handleCloseSnackBar(setOpenSnackbar)}
-      >
+      <Snackbar open={openSnackbar}>
         <Alert
           onClose={() => handleCloseSnackBar(setOpenSnackbar)}
           severity={snackBarSeverity}

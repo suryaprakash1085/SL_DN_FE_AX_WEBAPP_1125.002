@@ -278,7 +278,7 @@ export default function Sidebar() {
           alignItems: "center",
           minHeight: "89vh",
           position: "relative",
-          backgroundColor: "black",
+          // backgroundColor: "black",
         }}
       >
         {pageType === "tab" ? TabLayout : TileGrid}
