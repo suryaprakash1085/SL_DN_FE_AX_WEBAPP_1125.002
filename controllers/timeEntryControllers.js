@@ -210,7 +210,6 @@ const handleDeleteShift = async (
 
     // Refresh the data from the backend to ensure the UI is updated
     await fetchData(setUsers, setEmployees);
-
     handleMenuClose(setAnchorEl, setSelectedShift);
     setSnackbarMessage("Shift deleted successfully");
     setSnackbarSeverity("success");
@@ -259,6 +258,23 @@ const handleSaveShift = async (
 ) => {
   if (!selectedEmployee || !selectedDay) return;
 
+  // 🔥 FIX: Normalize workReport so .find() NEVER crashes
+  let reportArray = [];
+
+  if (Array.isArray(workReport)) {
+    reportArray = workReport;
+  } else if (Array.isArray(workReport?.data)) {
+    reportArray = workReport.data;
+  } else if (Array.isArray(workReport?.report)) {
+    reportArray = workReport.report;
+  } else if (workReport && typeof workReport === "object") {
+    reportArray = [workReport];
+  } else {
+    reportArray = [];
+  }
+
+  console.log("Normalized workReport:", reportArray);
+
   // Check for required fields only for start and end times
   if (!isLeave && (!newShift.start || !newShift.end)) {
     alert("Please fill in the start and end time fields.");
@@ -270,53 +286,39 @@ const handleSaveShift = async (
 
   if (!isLeave) {
     // Find matching work report entry
-    const workReportEntry = workReport.find(
+    const workReportEntry = reportArray.find(
       (entry) => entry.user_id === selectedEmployee.id
     );
 
     if (workReportEntry) {
-      // Normalize the time formats for comparison
+      // Normalize time formats
       const normalizeTimeFormat = (timeStr) => {
         return timeStr.replace(/\s+/g, " ").toUpperCase();
       };
 
-      const workReportTime = normalizeTimeFormat(workReportEntry.time); // e.g. "10:00 AM-08:00 PM"
+      const workReportTime = normalizeTimeFormat(workReportEntry.time);
 
       // Extract start and end times
       const [startTime, endTime] = workReportTime
         .split("-")
         .map((time) => time.trim());
 
-      // Calculate total minutes using dayjs
       const start = dayjs(startTime, "hh:mm A");
       const end = dayjs(endTime, "hh:mm A");
-      const workReportTimeTotal = end.diff(start, "minute"); // This will give you the total in minutes
+      const workReportTimeTotal = end.diff(start, "minute");
       const workReportTimeHours = Math.floor(workReportTimeTotal / 60);
 
-      // console.log('Work Report Time Total:', workReportTimeTotal); // Should log 600 for "10:00 AM - 08:00 PM"
-      // console.log('Work Report Time Hours:', workReportTimeHours); // Should log 10 for "10:00 AM - 08:00 PM"
-
-      const entryTime = normalizeTimeFormat(newShift.time); // e.g. "10:00 AM - 08:00 PM"
-
+      const entryTime = normalizeTimeFormat(newShift.time);
       const [newShiftStartTime, newShiftEndTime] = newShift.time
         .split("-")
         .map((time) => time.trim());
+
       const newShiftStart = dayjs(newShiftStartTime, "hh:mm A");
       const newShiftEnd = dayjs(newShiftEndTime, "hh:mm A");
-      const newShiftTimeTotal = newShiftEnd.diff(newShiftStart, "minute"); // This will give you the total in minutes
+      const newShiftTimeTotal = newShiftEnd.diff(newShiftStart, "minute");
       const newShiftTimeHours = Math.floor(newShiftTimeTotal / 60);
 
-      // console.log('New Shift Time Total:', newShiftTimeTotal); // Should log 600 for "10:00 AM - 08:00 PM"
-      // console.log('New Shift Time Hours:', newShiftTimeHours); // Should log 10 for "10:00 AM - 08:00 PM"
-
-      // Convert both formats to be identical before comparison
-      const standardizedWorkReportTime = workReportTime.replace("-", " - ");
-      const standardizedEntryTime = entryTime;
-
-      // console.log('Work Report Time:', standardizedWorkReportTime);
-      // console.log('Entry Time:', standardizedEntryTime);
-
-      // Check if times match exactly
+      // Compare duration, color coding
       color = newShiftTimeHours === workReportTimeHours ? "pink" : "blue";
     } else {
       color = "blue"; // No matching work report entry
@@ -327,7 +329,7 @@ const handleSaveShift = async (
     id: editingShift ? editingShift.id : Date.now(),
     time: newShift.time,
     name: selectedEmployee.name,
-    color: color,
+    color,
     date: dayjs(selectedDay, "DD/MM/YYYY").isValid()
       ? dayjs(selectedDay, "DD/MM/YYYY").format("YYYY-MM-DD")
       : "Invalid Date",
@@ -358,11 +360,13 @@ const handleSaveShift = async (
     await fetchData(setUsers, setEmployees);
 
     handleCloseShiftModal(setOpenShiftModal, setEditingShift, setNewShift);
+
     setSnackbarMessage(
       editingShift ? "Shift updated successfully" : "Shift added successfully"
     );
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
+
   } catch (error) {
     console.log(
       editingShift ? "Error updating shift:" : "Error saving shift:",
@@ -376,7 +380,8 @@ const handleSaveShift = async (
   }
 };
 
-const fetchData = async (setUsers, setEmployees, token) => {
+
+const fetchData = async (setUsers, setEmployees, setWorkReport, token) => {
   try {
     // Fetch users
     const response = await fetch(
@@ -388,19 +393,18 @@ const fetchData = async (setUsers, setEmployees, token) => {
         },
       }
     );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+
+    if (!response.ok) throw new Error("Network response was not ok");
+
     const usersData = await response.json();
 
-    // Filter out users with null shift_type
     const transformedUsers = usersData
-      .filter((user) => user.shift_type !== null) // Filter out users with null shift_type
+      .filter((user) => user.shift_type !== null)
       .map((user) => ({
         id: user.user_id,
         name: `${user.firstName} ${user.lastName}`,
         department: "Employee",
-        shifts: [], // Initialize with empty shifts
+        shifts: [],
       }));
 
     // Fetch time entries
@@ -413,32 +417,68 @@ const fetchData = async (setUsers, setEmployees, token) => {
         },
       }
     );
+
     if (!timeEntriesResponse.ok) {
       throw new Error("Failed to fetch time entries");
     }
+
     const timeEntries = await timeEntriesResponse.json();
 
-    // console.log("Time Entries:", timeEntries);
-    // Map time entries to users
     const usersWithShifts = transformedUsers.map((user) => {
       const userShifts = timeEntries.filter(
         (entry) => entry.employeeId === user.id
       );
+
       return {
         ...user,
         shifts: userShifts.map((shift) => ({
           ...shift,
-          date: dayjs(shift.date).format("DD/MM/YYYY"), // Format date for display
+          date: dayjs(shift.date).format("DD/MM/YYYY"),
         })),
       };
     });
 
     setUsers(usersWithShifts);
     setEmployees(usersWithShifts);
+
+    /*
+     * ------------------------------------------
+     * FIXED: FETCH WORK REPORT (SAFE NORMALIZATION)
+     * ------------------------------------------
+     */
+    const workReportResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/time/time-entries`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const workReportRaw = await workReportResponse.json();
+
+    // Normalize workReport to always be an ARRAY
+    let finalReport = [];
+
+    if (Array.isArray(workReportRaw)) {
+      finalReport = workReportRaw;
+    } else if (Array.isArray(workReportRaw?.data)) {
+      finalReport = workReportRaw.data;
+    } else if (Array.isArray(workReportRaw?.report)) {
+      finalReport = workReportRaw.report;
+    } else if (workReportRaw && typeof workReportRaw === "object") {
+      finalReport = [workReportRaw];
+    }
+
+    console.log("Final normalized workReport:", finalReport);
+    setWorkReport(finalReport);
+
   } catch (error) {
     console.log("Fetch error:", error);
   }
 };
+
 
 const filteredEmployees = (employees, searchTerm, department) => {
   return employees.filter((employee) => {

@@ -117,6 +117,7 @@ export default function TimeEntry() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+const [workReport, setWorkReport] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -175,7 +176,7 @@ export default function TimeEntry() {
   useEffect(() => {
     const token = Cookies.get("token");
     setToken(token);
-    fetchData(setUsers, setEmployees, token);
+ fetchData(setUsers, setEmployees, token, setWorkReport);
     setLoading(false);
   }, []);
 
@@ -388,6 +389,7 @@ export default function TimeEntry() {
                                 setIsLeave,
                                 setOpenShiftModal,
                                 setNewShift,
+                                workReport   
                               )
                             }
                             sx={{ width: "100%", mt: 1 }}
