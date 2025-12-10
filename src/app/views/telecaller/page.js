@@ -241,8 +241,9 @@ export default function Telecaller() {
   // Backend rows states
   const [rows, setRows] = useState([]);
 
-
+console.log("Rows Data:",token);
   useEffect(() => {
+    const token = Cookies.get("token");
     fetchCompanyDetails(token, setLimit);
   }, []);
   // const [filteredRows, setFilteredRows] = useState(rows);
