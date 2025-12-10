@@ -461,7 +461,7 @@ const filterStyle = {
                     max={99999}
                     color="primary"
                   >
-                    <div style={filterStyle}>All{TotalCount}</div>
+                    <div style={filterStyle}>All</div>
                   </Badge>
                 </Box>
 
