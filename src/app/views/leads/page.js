@@ -66,6 +66,7 @@ const columns = [
   { field: "state", headerName: "State", width: 150 },
   { field: "city", headerName: "City", width: 150 },
   { field: "street", headerName: "Street", width: 150 },
+
   // { field: "leads_owner", headerName: "Lead Owner", width: 150 },
 ];
 
@@ -400,7 +401,7 @@ const filterStyle = {
     <>
       {/* //? Navbar */}
       <Navbar pageName="Leads" />
-      <Box>
+      <Box paddingX="1%" paddingBottom="20px">
         <Box paddingX="1%">
           <Box
             sx={{
@@ -461,7 +462,7 @@ const filterStyle = {
                     max={99999}
                     color="primary"
                   >
-                    <div style={filterStyle}>All{TotalCount}</div>
+                    <div style={filterStyle}>All</div>
                   </Badge>
                 </Box>
 
@@ -713,6 +714,9 @@ const filterStyle = {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              marginTop: "20px",
+              width: "100%",      // optional, ensures full width
+
             }}
           >
             {/* {console.log({ filteredRows })} */}

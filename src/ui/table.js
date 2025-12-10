@@ -163,7 +163,7 @@ export default function TableUI({
     };
 
     return (
-      <Box>
+       <Box display="flex" gap={1} alignItems="center">
         {specialActions &&
           specialActions.map((iconObj, index) => (
             <Tooltip key={index} title={iconObj.tooltip || ""}>
@@ -256,14 +256,31 @@ export default function TableUI({
   };
 
   return (
+//     <Box
+//   sx={{
+//     "& .sticky-actions-header": {
+//       position: "sticky",
+//       top: 0,
+//       zIndex: 3,
+//       backgroundColor: "#fff"
+//     }
+//   }}
+// >
     <TableContainer
       id="scrollable-table"
       component={Paper}
       sx={{
         maxHeight: "70vh",
         overflowY: "auto",
+        "& .sticky-header": {
+  position: "sticky",
+  top: 0,
+  zIndex: 5,
+  background: "#fff"
+},
         "@media (max-width: 600px)": {
-          padding: "10px",
+          // padding: "10px",
+           paddingBottom: "80px", 
           backgroundColor: "#f9f9f9",
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         },
@@ -280,13 +297,7 @@ export default function TableUI({
         }}
         aria-label="simple table"
       >
-        <TableHead
-          style={{
-            position: "sticky",
-            top: 0,
-            backgroundColor: "white",
-          }}
-        >
+        <TableHead className="sticky-header">
           <TableRow>
             {/* Add select all checkbox in header */}
             {selectedUserId && (
@@ -308,7 +319,7 @@ export default function TableUI({
             {columns.map((column, index) => (
               <TableCell key={index}>{column.headerName}</TableCell>
             ))}
-            {showActions ? <TableCell>Actions</TableCell> : <></>}
+            {showActions ?  <TableCell>Actions</TableCell> : <></>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -351,7 +362,7 @@ export default function TableUI({
 
                 {/*  Edit and Delete Buttons */}
                 {showActions ? (
-                  <TableCell key="more" sx={{ zIndex: 1, textAlign: "left" }}>
+                  <TableCell key="more" sx={{ zIndex: 2, textAlign: "left",minWidth: 200, whiteSpace: "nowrap" }}>
                     {actions(row)}
                   </TableCell>
                 ) : null}
@@ -579,7 +590,8 @@ export default function TableUI({
       {/* Show exchange button when rows are selected */}
       {selectedRows.length > 0 && (
   <Box sx={{ 
-    position: 'fixed', 
+    position: 'sticky',
+    mt:2, 
     bottom: 2, 
     right: 0, 
     width: 'auto',
@@ -589,6 +601,7 @@ export default function TableUI({
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '8px', 
+    marginTop: '10px',
     // boxShadow: '0 -2px 10px rgba(0,0,0,0.15)' // Enhanced shadow for better visibility
   }}>
     <Button
@@ -605,5 +618,6 @@ export default function TableUI({
 
 
     </TableContainer>
+  
   );
 }
