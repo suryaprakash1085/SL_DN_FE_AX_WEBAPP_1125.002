@@ -82,6 +82,18 @@ export default function TableUI({
   let getOwnerName = async (ownerId) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/customer/getOwnerName/${ownerId}`;
 
+    // const response = await fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+
+    // let ownerName = await response.json();
+    // // console.log({ ownerName });
+    // return ownerName;
+     try {
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -90,9 +102,22 @@ export default function TableUI({
       },
     });
 
-    let ownerName = await response.json();
-    // console.log({ ownerName });
-    return ownerName;
+   if (!ownerId) return { username: "Unknown" };
+
+    // Check content type before parsing JSON
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      return data;
+    } else {
+      const text = await response.text(); // fallback: get raw response
+      console.warn("API returned non-JSON:", text);
+      return { username: "Unknown" };
+    }
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    return { username: "Unknown" };
+  }
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -154,12 +179,16 @@ export default function TableUI({
           ))}
         <IconButton
           onClick={async () => {
-            let owner = await getOwnerName(reorderedRow.leads_owner);
-            reorderedRow.leads_owner = owner.username;
-            // console.log({ rere: reorderedRow });
-            setSelectedRow(reorderedRow);
-            // console.log({ reorderedRow });
-            setOpenCreateUpdateModal(true);
+ try {
+      const owner = await getOwnerName(reorderedRow.leads_owner);
+      const updatedRow = { ...reorderedRow, leads_owner: owner.username || reorderedRow.leads_owner };
+      setSelectedRow(updatedRow);
+      setOpenCreateUpdateModal(true);
+    } catch (err) {
+      console.error("Error fetching owner:", err);
+      setSelectedRow(reorderedRow); // fallback in case API fails
+      setOpenCreateUpdateModal(true);
+    }
           }}
         >
           <EditIcon />

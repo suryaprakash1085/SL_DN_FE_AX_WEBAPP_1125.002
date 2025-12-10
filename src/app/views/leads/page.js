@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation.js";
 import Cookies from "js-cookie";
 
+
 //? Function imports
 import {
   filterRows,
@@ -96,6 +97,9 @@ export default function LeadsMaster() {
   const [filterType, setFilterType] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [limit, setLimit] = useState(0); //  Default to a number
+  const [leadsCount, setLeadsCount] = useState(0);
+const [blacklistedCount, setBlacklistedCount] = useState(0);
+
 
   //? Backend data states
   const [rows, setRows] = useState([]);
@@ -112,6 +116,7 @@ export default function LeadsMaster() {
   // Add new state for selected user
   const [selectedUserId, setSelectedUserId] = useState(null);
 
+
   // Update the filteredRows logic with console logging for debugging
   const filteredRows = rows.filter((row) => {
     if (selectedUserId) {
@@ -121,8 +126,8 @@ export default function LeadsMaster() {
   });
 
   const [allCount, setAllCount] = useState(0);
-  const [blacklistedCount, setBlacklistedCount] = useState(0);
-  const [leadsCount, setLeadsCount] = useState(0);
+ 
+  const TotalCount = leadsCount + blacklistedCount;
 
   // Add state variables for selected state and city
   const [states, setStates] = useState([]);
@@ -160,6 +165,7 @@ export default function LeadsMaster() {
     referred_by: "",
   };
 
+ 
   // State for managing the data to be sent to the modal
   const [data, setData] = useState(initialData);
 
@@ -288,7 +294,24 @@ export default function LeadsMaster() {
     }
   }, [selectedUserId]); // Runs whenever selectedUserId changes
 
-  const filterStyle = {
+ 
+
+
+//  const filterStyle = (active) => ({
+//   display: "flex",
+//   justifyContent: "center",
+//   alignItems: "center",
+//   backgroundColor: active ? "#1976d2" : "#f9f9f9",
+//   color: active ? "white" : "black",
+//   height: "30px",
+//   width: "60px",
+//   padding: "10px",
+//   textAlign: "center",
+//   cursor: "pointer",
+//   borderRadius: "15px",
+//   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+// });
+const filterStyle = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -425,16 +448,20 @@ export default function LeadsMaster() {
                       "All",
                       showAlert,
                       true,
-                      setHasMore
+                      setHasMore,
+                      limit,
+                      0,
+                      setOffset
+                      
                     );
                   }}
                 >
                   <Badge
-                    badgeContent={leadsCount + blacklistedCount}
+                    badgeContent={TotalCount}
                     max={99999}
                     color="primary"
                   >
-                    <div style={filterStyle}>All</div>
+                    <div style={filterStyle}>All{TotalCount}</div>
                   </Badge>
                 </Box>
 
@@ -559,18 +586,22 @@ export default function LeadsMaster() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyUp={(e) => {
-                  e.key === "Enter"
-                    ? filterRows(
-                        token,
-                        rows,
-                        setRows,
-                        searchQuery,
-                        filterType,
-                        setOpenSnackbar,
-                        setSnackbarMessage,
-                        setSnackBarSeverity
-                      )
-                    : null;
+                 if(e.key === "Enter") {
+                  filterRows(
+      token,                       
+      rows,                       
+      setRows,                    
+      searchQuery,                
+      filterType || "All",         
+      showAlert,                  
+      hasMore,                     
+      setHasMore,                  
+      limit > 0 ? limit : 100,    
+      0,                           
+      setOffset                     
+    );
+                 }
+                   
                 }}
                 sx={{ backgroundColor: "white", borderRadius: 1 }}
               />

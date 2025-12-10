@@ -217,10 +217,10 @@ export default function CustomerDetail() {
   }, []);
 
   useEffect(() => {
-    if (!id || !token) {
-      setLoading(false);
-      return;
-    }
+ const storedToken = Cookies.get("token");
+  if (!storedToken) return;
+
+  setToken(storedToken);
 
     fetchCustomerDetails(
       token,

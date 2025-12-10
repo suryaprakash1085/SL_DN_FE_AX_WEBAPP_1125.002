@@ -164,6 +164,7 @@ const fetchReportData = async (setReportData) => {
 };
 
 const fetchUsers = async (setUsersData) => {
+  console.log("API CALL: fetchUsers API called"); 
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/users`,
@@ -186,6 +187,8 @@ const fetchUsers = async (setUsersData) => {
 };
 
 const fetchTimeEntries = async (setTimeEntriesData) => {
+    console.log("API CALL: fetchTimeEntries API called"); // ← ADD THIS
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/time/time-entries`,

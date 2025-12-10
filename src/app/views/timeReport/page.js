@@ -73,10 +73,48 @@ export default function TimeReport() {
   // Determine if the current view is mobile or tablet
   const isMobileView = useMediaQuery(theme.breakpoints.down("sm"));
   const isTabletView = useMediaQuery(theme.breakpoints.between("sm", "md"));
+//   const sampleTimeEntries = [
+//   {
+//     employeeId: "u1",
+//     date: "04/12/2025", // format must match your component
+//     time: "09:00 AM - 05:00 PM"
+//   },
+//   {
+//     employeeId: "u2",
+//     date: "04/12/2025",
+//     time: "10:00 AM - 06:00 PM"
+//   }
+// ];
+// const sampleUsers = [
+//   {
+//     user_id: "u1",
+//     firstName: "John",
+//     lastName: "Doe",
+//     phone: "1234567890"
+//   },
+//   {
+//     user_id: "u2",
+//     firstName: "Jane",
+//     lastName: "Smith",
+//     phone: "9876543210"
+//   }
+// ];
+const normalizedTimeEntries = timeEntriesData.map((entry) => ({
+  ...entry,
+  date: entry.date.split("/").map((d) => d.padStart(2, "0")).join("/"),
+  employeeId: entry.employeeId.toString(),
+}));
+
+const normalizedDates = dates.map((date) =>
+  date.split(" / ")[0].split("-").map((d) => d.padStart(2, "0")).join("/")
+);
+
 
   useEffect(() => {
     fetchUsers(setUsersData);
     fetchTimeEntries(setTimeEntriesData);
+    //  setUsersData(sampleUsers);
+    //  setTimeEntriesData(sampleTimeEntries); 
   }, []);
 
   useEffect(() => {
@@ -86,6 +124,7 @@ export default function TimeReport() {
   useEffect(() => {
     handleGoClick(selectedMonth, setDates, setVisibleDates);
   }, [selectedMonth]);
+console.log(usersData);
 
   return (
     <ThemeProvider theme={theme}>
@@ -171,8 +210,12 @@ export default function TimeReport() {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        onClick={() =>
-                          handleSearch(searchQuery, usersData, setFilteredUsers)
+                        onClick={() =>{
+                            console.log("BUTTON CLICKED: Search button clicked");
+                            handleSearch(searchQuery, usersData, setFilteredUsers)
+                        }
+                          
+                         
                         }
                       >
                         <SearchIcon />
@@ -219,18 +262,11 @@ export default function TimeReport() {
                   // Remove the shift_type filter to show all users
                   const dateEntries = filteredUsers
                     .map((user) => {
-                      const userTimeEntries = timeEntriesData.filter(
-                        (entry) =>
-                          entry.employeeId === user.user_id &&
-                          entry.date ===
-                            date
-                              .split(" / ")[0]
-                              .split("-")
-                              .map((part) =>
-                                part.length === 1 ? `0${part}` : part
-                              )
-                              .join("/")
-                      );
+                    const userTimeEntries = normalizedTimeEntries.filter(
+  (entry) =>
+    entry.employeeId === user.user_id.toString() &&
+    normalizedDates.includes(entry.date)
+);
 
                       // Check if there are any non-empty time entries
                       const hasValidTimeEntries = userTimeEntries.some(
@@ -267,18 +303,11 @@ export default function TimeReport() {
                         <Box>
                           {filteredUsers
                             .map((user) => {
-                              const userTimeEntries = timeEntriesData.filter(
-                                (entry) =>
-                                  entry.employeeId === user.user_id &&
-                                  entry.date ===
-                                    date
-                                      .split(" / ")[0]
-                                      .split("-")
-                                      .map((part) =>
-                                        part.length === 1 ? `0${part}` : part
-                                      )
-                                      .join("/")
-                              );
+                              const userTimeEntries = normalizedTimeEntries.filter(
+  (entry) =>
+    entry.employeeId === user.user_id.toString() &&
+    normalizedDates.includes(entry.date)
+);
 
                               const userReport = reportData.find((report) => {
                                 const [startYear, startMonth, startDay] =
@@ -359,7 +388,7 @@ export default function TimeReport() {
                             })}
                         </Box>
                       )}
-                    </Paper>
+                    </Paper>  
                   );
                 })}
               </Box>
@@ -389,18 +418,12 @@ export default function TimeReport() {
                     // Remove the shift_type filter to show all users
                     const dateEntries = filteredUsers
                       .map((user) => {
-                        const userTimeEntries = timeEntriesData.filter(
-                          (entry) =>
-                            entry.employeeId === user.user_id &&
-                            entry.date ===
-                              date
-                                .split(" / ")[0]
-                                .split("-")
-                                .map((part) =>
-                                  part.length === 1 ? `0${part}` : part
-                                )
-                                .join("/")
-                        );
+                       const userTimeEntries = normalizedTimeEntries.filter(
+  (entry) =>
+    entry.employeeId === user.user_id.toString() &&
+    normalizedDates.includes(entry.date)
+);
+
 
                         // Check if there are any non-empty time entries
                         const hasValidTimeEntries = userTimeEntries.some(
@@ -473,15 +496,21 @@ export default function TimeReport() {
                             <TableBody>
                               {filteredUsers
                                 .map((user) => {
-                                  const userTimeEntries = timeEntriesData.filter(
-                                    (entry) =>
-                                      entry.employeeId === user.user_id &&
-                                      entry.date === date
-                                        .split(" / ")[0]
-                                        .split("-")
-                                        .map((part) => (part.length === 1 ? `0${part}` : part))
-                                        .join("/")
-                                  );
+                                  // const userTimeEntries = timeEntriesData.filter(
+                                  //   (entry) =>
+                                  //     entry.employeeId === user.user_id &&
+                                  //     entry.date === date
+                                  //       .split(" / ")[0]
+                                  //       .split("-")
+                                  //       .map((part) => (part.length === 1 ? `0${part}` : part))
+                                  //       .join("/")
+                                  // );
+                                  const userTimeEntries = normalizedTimeEntries.filter(
+  (entry) =>
+    entry.employeeId === user.user_id.toString() &&
+    normalizedDates.includes(entry.date)
+);
+
 
                                   // Skip rendering if there are no time entries or all entries are empty
                                   if (userTimeEntries.length === 0 || 

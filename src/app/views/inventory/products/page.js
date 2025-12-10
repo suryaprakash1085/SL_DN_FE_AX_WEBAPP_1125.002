@@ -611,7 +611,8 @@ export default function Inventory() {
                 maxHeight: "70vh",
                 // height:"80vh",
                 overflowY: "auto",
-              }}
+                overflowX: "auto",
+              }}  
               onScroll={(event) => {
                 scrollToTopButtonDisplay(event, setShowFab);
                 infiniteScroll(
@@ -645,17 +646,20 @@ export default function Inventory() {
                     </TableCell>
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+
                     >
                       Category
                     </TableCell>
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      className="whitespace-nowrap overflow-hidden text-ellipsis"
                     >
                       Name
                     </TableCell>
 
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      className="overflow-hidden text-ellipsis line-clamp-2"
                     >
                       Description
                     </TableCell>
@@ -665,8 +669,17 @@ export default function Inventory() {
                     <TableCell sx={{ padding: "10px 16px" }}>Price</TableCell> */}
                     <TableCell sx={{ padding: "10px 16px" }}>UOM</TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
+   sx={{   padding: "10px 16px",
+    fontWeight: "bold",
+    whiteSpace: "nowrap",
+    width: 120,
+    minWidth: 120,
+    maxWidth: 120,
+    position: "sticky",
+    right: 0,
+    backgroundColor: "white",
+    zIndex: 6,
+  }}  >
                       Actions
                     </TableCell>
                   </TableRow>
@@ -846,7 +859,8 @@ export default function Inventory() {
                           )}
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell
+                         sx={{ padding: "10px 16px",fontWeight: "bold",maxWidth: 150, overflow: "hidden",textOverflow: "ellipsis",whiteSpace: "nowrap"}}>
                           {editRowId === row.inventory_id ? (
                             <TextField
                               name="part_name"
@@ -861,7 +875,7 @@ export default function Inventory() {
                           )}
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell   sx={{ padding: "10px 16px",maxWidth: 250,overflow: "hidden",textOverflow: "ellipsis",whiteSpace: "nowrap",}} >
                           {editRowId === row.inventory_id ? (
                             <TextField
                               name="description"
@@ -929,7 +943,7 @@ export default function Inventory() {
                           
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell   sx={{whiteSpace: "nowrap", width: "110px",minWidth: "110px", maxWidth: "110px", }}>
                           {editRowId === row.inventory_id ? (
                             <>
                               <IconButton
@@ -969,9 +983,10 @@ export default function Inventory() {
                             </>
                           ) : (
                             <>
+                            <Box sx={{ display: "inline-flex", gap: 0.5 }}>
                               <Tooltip title="Edit">
                                 <IconButton
-                                  disabled={editRowId}
+                                  disabled={editRowId!= null }
                                   onClick={() =>
                                     handleEditClick(
                                       row,
@@ -985,7 +1000,9 @@ export default function Inventory() {
                               </Tooltip>
                               <Tooltip title="Delete">
                                 <IconButton
-                                  disabled={editRowId ? true : false}
+                                  // disabled={editRowId ? true : false}
+                                      disabled={editRowId !== null}
+
                                   onClick={() =>
                                     handleDeleteClick(
                                       row.inventory_id,
@@ -997,6 +1014,7 @@ export default function Inventory() {
                                   <DeleteIcon />
                                 </IconButton>
                               </Tooltip>
+                              </Box>
                             </>
                           )}
                         </TableCell>
@@ -1048,19 +1066,36 @@ export default function Inventory() {
             Cancel
           </Button>
           <Button
-            onClick={() => {
-              let deleted = confirmDelete(
-                token,
-                setRows,
-                deleteRowId,
-                setOpenDeleteDialog,
-                setShowError,
-                setErrorMessage,
-                setErrorSeverity
-              );
+            // onClick={() => {
+            //   let deleted = confirmDelete(
+            //     token,
+            //     setRows,
+            //     deleteRowId,
+            //     setOpenDeleteDialog,
+            //     setShowError,
+            //     setErrorMessage,
+            //     setErrorSeverity
+            //   );
 
-              deleted ? location.reload() : null;
-            }}
+            //   deleted ? location.reload() : null;
+            // }}
+             onClick={async () => {
+    const deleted = await confirmDelete(
+      token,
+      setRows,
+      deleteRowId,
+      setOpenDeleteDialog,
+      setShowError,
+      setErrorMessage,
+      setErrorSeverity
+    );
+
+    if (deleted) {
+         
+      // optional: reload if needed
+      // location.reload();
+    }
+  }}
             color="error"
           >
             Confirm
