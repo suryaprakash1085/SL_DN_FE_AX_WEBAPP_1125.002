@@ -180,7 +180,7 @@ export default function Sidebar() {
               boxShadow: "1",
               cursor: "pointer",
             }}
-            onClick={() => setPageType("tab")}
+            onClick={() => router.push(tile.route)}
           >
             <Box
               sx={{
