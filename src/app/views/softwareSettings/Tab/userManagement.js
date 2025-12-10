@@ -383,10 +383,12 @@ export default function UserManagement() {
                     <TableCell
                       sx={{
                         position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       Username
@@ -394,10 +396,12 @@ export default function UserManagement() {
                     <TableCell
                       sx={{
                         position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       Role
@@ -405,21 +409,25 @@ export default function UserManagement() {
                     <TableCell
                       sx={{
                         position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       Email
                     </TableCell>
                     <TableCell
                       sx={{
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+                         position: "sticky",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       First Name
@@ -427,10 +435,12 @@ export default function UserManagement() {
                     <TableCell
                       sx={{
                         position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       Last Name
@@ -438,21 +448,23 @@ export default function UserManagement() {
                     <TableCell
                       sx={{
                         position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+  top: 0,
+  zIndex: 2,
+  backgroundColor: "white",
+  fontWeight: "bold",
+  minWidth: "120px",     // ⭐ prevent collapse
+  whiteSpace: "nowrap", 
                       }}
                     >
                       Phone
                     </TableCell>
                     <TableCell
                       sx={{
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 2,
-                        backgroundColor: "white",
-                        fontWeight: "bold",
+                          minWidth: "150px",
+    position: "sticky",
+    top: 0,
+    zIndex: 3,
+    backgroundColor: "white", 
                       }}
                     >
                       Actions
@@ -465,7 +477,12 @@ export default function UserManagement() {
                       key={user.user_id}
                       sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}
                     >
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <TextField
                             variant="standard"
@@ -484,7 +501,12 @@ export default function UserManagement() {
                           user.username
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <Box sx={{ marginLeft: "1%", marginRight: "1%" }}>
                             <Autocomplete
@@ -522,7 +544,12 @@ export default function UserManagement() {
                           user.role_type
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <TextField
                             variant="standard"
@@ -544,7 +571,12 @@ export default function UserManagement() {
                           user.email
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <TextField
                             variant="standard"
@@ -563,7 +595,12 @@ export default function UserManagement() {
                           user.firstName
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <TextField
                             variant="standard"
@@ -582,7 +619,12 @@ export default function UserManagement() {
                           user.lastName
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <TextField
                             variant="standard"
@@ -601,7 +643,12 @@ export default function UserManagement() {
                           user.phone
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                       sx={{
+    minWidth: "120px",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  }}>
                         {editingRowId === user.user_id ? (
                           <div
                             style={{

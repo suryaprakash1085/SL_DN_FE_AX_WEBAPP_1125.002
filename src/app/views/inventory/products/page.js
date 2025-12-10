@@ -60,21 +60,17 @@ import LoadingScreen from "@/components/loadingScreen.js";
 export default function Inventory() {
   const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    const storedToken = Cookies.get("token");
-    setToken(storedToken);
-  }, []);
 
   const [rows, setRows] = useState([
-    {
-      inventory_id: "",
-      part_name: "",
-      part_number: "",
-      description: "",
-      category: "",
-      quantity: "",
-      price: "",
-    },
+    // {
+    //   inventory_id: "",
+    //   part_name: "",
+    //   part_number: "",
+    //   description: "",
+    //   category: "",
+    //   quantity: "",
+    //   price: "",
+    // },
   ]);
 
   const [editRowId, setEditRowId] = useState(null);
@@ -161,75 +157,126 @@ export default function Inventory() {
   });
 
   // const filteredRows = filterRows(rows, searchQuery, filterType);
-
   useEffect(() => {
-    const storedToken = Cookies.get("token");
+  const storedToken = Cookies.get("token");
+  if (!storedToken) return;
+  setToken(storedToken);
+}, []);
 
-    const getLimit = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/ss`;
-        // console.log("Fetching data from:", url);
+useEffect(() => {
+  if (!token) return; // wait until token is set
 
-        const response = await fetch(url, {
-          method: "GET",
+  const getLimit = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ss`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data.company_details?.[0]?.fetch_limit;
+    } catch (err) {
+      console.error("Error fetching limit:", err);
+      return 10; 
+    }
+  };
+
+  const fetchInventory = async (lim) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
-        });
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
         }
+      );
 
-        const data = await response.json();
-        return data.company_details[0]?.fetch_limit;
-      } catch (error) {
-        console.error("Error fetching limit:", error);
-        return null; // Handle the error gracefully
-      }
-    };
-    // Call the function and log the result
-    getLimit().then((lim) => {
-      setLimit(lim);
-      fetchInventory(lim);
-    });
-
-    async function fetchInventory(lim) {
-      console.log({ lim });
-      try {
-        if (!token) {
-          throw new Error("No token found. Please log in.");
-        }
-
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch entries");
-
-        const data = await response.json();
-        setRows(data);
-
-        // setFilteredEntries(data);
-        setIsLoading(false);
-      } catch (err) {
-        // setError(err.message);
-        // setSnackbarMessage(err.message); // Set error message for Snackbar
-        // setOpenSnackbar(true); // Show Snackbar with error message
-        // setLoading(false);
-      }
+      const data = await response.json();
+      setRows(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching inventory:", err);
     }
-    if (token) {
-      fetchInventory();
-    }
-  }, [token]);
+  };
+
+  (async () => {
+    const lim = await getLimit();
+    setLimit(lim);
+    fetchInventory(lim);   // ONLY ONE CALL
+  })();
+}, [token]);
+
+
+  // useEffect(() => {
+  //   const storedToken = Cookies.get("token");
+
+  //   const getLimit = async () => {
+  //     try {
+  //       const url = `${process.env.NEXT_PUBLIC_API_URL}/ss`;
+  //       // console.log("Fetching data from:", url);
+
+  //       const response = await fetch(url, {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`API error: ${response.status}`);
+  //       }
+
+  //       const data = await response.json();
+  //       return data.company_details[0]?.fetch_limit;
+  //     } catch (error) {
+  //       console.error("Error fetching limit:", error);
+  //       return null; // Handle the error gracefully
+  //     }
+  //   };
+  //   // Call the function and log the result
+  //   getLimit().then((lim) => {
+  //     setLimit(lim);
+  //     fetchInventory(lim);
+  //   });
+
+  //   async function fetchInventory(lim) {
+  //     console.log({ lim });
+  //     try {
+  //       if (!token) {
+  //         throw new Error("No token found. Please log in.");
+  //       }
+
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       if (!response.ok) throw new Error("Failed to fetch entries");
+
+  //       const data = await response.json();
+  //       setRows(data);
+
+  //       // setFilteredEntries(data);
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       // setError(err.message);
+  //       // setSnackbarMessage(err.message); // Set error message for Snackbar
+  //       // setOpenSnackbar(true); // Show Snackbar with error message
+  //       // setLoading(false);
+  //     }
+  //   }
+  //   if (token) {
+  //     fetchInventory();
+  //   }
+  // }, [token]);
 
   // useEffect(() => {
   //   async function fetchUomData() {
@@ -615,27 +662,36 @@ export default function Inventory() {
               }}  
               onScroll={(event) => {
                 scrollToTopButtonDisplay(event, setShowFab);
+                
+  const target = event.target;
+
+  // Check if user reached bottom of container
+  const isBottom =
+    target.scrollHeight - target.scrollTop <= target.clientHeight + 10;
+
+                if (isBottom && !isLoading && hasMore) {
                 infiniteScroll(
-                  event,
+                  
                   token,
                   setRows,
                   searchQuery,
                   limit,
-                  isLoading,
+                  
                   setIsLoading,
-                  hasMore,
+                 
                   setHasMore,
                   offset,
                   setOffset
-                );
+                );}
               }}
             >
               <Table>
                 <TableHead
                   style={{
-                    position: "sticky",
-                    top: 0,
-                    backgroundColor: "white",
+                     position: "sticky",
+    top: 0,
+    backgroundColor: "#fff",
+    zIndex: 20,  
                   }}
                 >
                   <TableRow>
