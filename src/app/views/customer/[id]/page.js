@@ -274,6 +274,22 @@ export default function CustomerDetail() {
     setStates(statesData);
   }, []);
 
+  // Reset vehicle form when opening modal in add mode (prevents stale values)
+  useEffect(() => {
+    if (modalOpen && !isEditing) {
+      setIsPlateNumberHidden(false);
+      setFuelType("");
+      setPlateNumber("");
+      setMake("");
+      setModel("");
+      setYear("");
+      setVin("");
+      setEngineNumber("");
+      setChassisNumber("");
+      setRegistrationDate("");
+    }
+  }, [modalOpen, isEditing]);
+
   const handleMakeChange = (value) => {
     setMake(value);
     setModel("");

@@ -99,7 +99,12 @@ export async function fetchTotalCustomers(
   );
 
   const data = await response.json();
-  setTotalCustomers(data.customer);
+  // API now returns { total, leads, customer, blacklistedcount }
+  setTotalCustomers(
+    data && typeof data.total === "number"
+      ? data.total
+      : data?.customer ?? 0
+  );
 
   try {
     const response1 = await fetch(
