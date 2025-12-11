@@ -98,7 +98,7 @@ export default function Inventory() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
-  const limit = 10;
+  const limit = 100;
   const [currentTransactionDetails, setCurrentTransactiondetails] = useState({
     inventory_name: "",
     stock: "",
@@ -523,46 +523,103 @@ export default function Inventory() {
                       position: "sticky",
                       top: 0,
                       backgroundColor: "white",
+                      zIndex: 3,
                     }}
                   >
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Material ID
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Category
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Name
                     </TableCell>
 
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Description
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       UOM
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Available Quantity
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Price
                     </TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      sx={{
+                        padding: "10px 16px",
+                        fontWeight: "bold",
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        backgroundColor: "white",
+                      }}
                     >
                       Actions
                     </TableCell>

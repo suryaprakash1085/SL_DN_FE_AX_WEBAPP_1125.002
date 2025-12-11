@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useMediaQuery,
 } from "@mui/material";
 import UserRegistration from "./userRegistration";
 import AddIcon from "@mui/icons-material/Add";
@@ -55,6 +56,8 @@ export default function UserManagement() {
     message: "",
     severity: "success",
   });
+
+  const isMobile = useMediaQuery("(max-width:900px)");
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -360,371 +363,544 @@ export default function UserManagement() {
               )}
             </Box>
           </Box>
-          <Box
-            sx={{ height: "60vh", display: "flex", flexDirection: "column" }}
-          >
-            <TableContainer
-              component={Paper}
-              sx={{
-                maxHeight: "70vh",
-                overflow: "auto",
-                "& .MuiTable-root": {
-                  tableLayout: "fixed",
-                  width: "100%",
-                },
-              }}
-            >
-              <Table
-                sx={{ minWidth: { xs: "100%", sm: 800 } }}
-                aria-label="user management table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
-                      Username
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
+          {isMobile ? (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
+              {users.map((user) => (
+                <Paper key={user.user_id} sx={{ p: 2 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {user.username}
+                    </Typography>
+                    <Box>
+                      {editingRowId === user.user_id ? (
+                        <>
+                          <Tooltip title="Cancel">
+                            <IconButton variant="contained" onClick={handleCancel}>
+                              <CancelIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Submit">
+                            <IconButton variant="contained" onClick={handleSubmit}>
+                              <SendIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              variant="contained"
+                              onClick={() => setEditingRowId(user.user_id)}
+                              disabled={editingRowId !== null}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <span>
+                              <IconButton
+                                variant="contained"
+                                onClick={() => handleDeleteClick(user.user_id)}
+                                disabled={editingRowId !== null || rolename !== "Admin"}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Reset Password">
+                            <IconButton
+                              variant="contained"
+                              onClick={() => handleOpenPasswordModal(user.user_id)}
+                              disabled={editingRowId !== null}
+                            >
+                              <LockResetIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ display: "grid", rowGap: 1, columnGap: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
                       Role
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
+                    </Typography>
+                    {editingRowId === user.user_id ? (
+                      <Box sx={{ marginLeft: "1%", marginRight: "1%" }}>
+                        <Autocomplete
+                          options={roleOptions}
+                          getOptionLabel={(option) => option.role_name || "Unknown Role"}
+                          value={
+                            roleOptions.find((role) => role.role_name === user.role_type) ||
+                            null
+                          }
+                          onChange={(event, newValue) => {
+                            if (newValue) {
+                              setModifiedUsers((prev) => ({
+                                ...prev,
+                                [user.user_id]: {
+                                  ...prev[user.user_id],
+                                  role_type: newValue.role_name,
+                                  role_id: newValue.role_id,
+                                },
+                              }));
+                            }
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} variant="standard" fullWidth />
+                          )}
+                        />
+                      </Box>
+                    ) : (
+                      <Typography>{user.role_type}</Typography>
+                    )}
+
+                    <Typography variant="body2" color="text.secondary">
                       Email
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                         position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
+                    </Typography>
+                    {editingRowId === user.user_id ? (
+                      <TextField
+                        variant="standard"
+                        fullWidth
+                        size="small"
+                        value={user.email}
+                        onChange={(e) =>
+                          handleFieldChange(user.user_id, "email", e.target.value)
+                        }
+                        onBlur={(e) => handleEmailBlur(user.user_id, e.target.value)}
+                      />
+                    ) : (
+                      <Typography>{user.email}</Typography>
+                    )}
+
+                    <Typography variant="body2" color="text.secondary">
                       First Name
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
+                    </Typography>
+                    {editingRowId === user.user_id ? (
+                      <TextField
+                        variant="standard"
+                        fullWidth
+                        size="small"
+                        value={user.firstName}
+                        onChange={(e) =>
+                          handleFieldChange(user.user_id, "firstName", e.target.value)
+                        }
+                      />
+                    ) : (
+                      <Typography>{user.firstName}</Typography>
+                    )}
+
+                    <Typography variant="body2" color="text.secondary">
                       Last Name
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-  top: 0,
-  zIndex: 2,
-  backgroundColor: "white",
-  fontWeight: "bold",
-  minWidth: "120px",     // ⭐ prevent collapse
-  whiteSpace: "nowrap", 
-                      }}
-                    >
+                    </Typography>
+                    {editingRowId === user.user_id ? (
+                      <TextField
+                        variant="standard"
+                        fullWidth
+                        size="small"
+                        value={user.lastName}
+                        onChange={(e) =>
+                          handleFieldChange(user.user_id, "lastName", e.target.value)
+                        }
+                      />
+                    ) : (
+                      <Typography>{user.lastName}</Typography>
+                    )}
+
+                    <Typography variant="body2" color="text.secondary">
                       Phone
-                    </TableCell>
-                    <TableCell
-                      sx={{
+                    </Typography>
+                    {editingRowId === user.user_id ? (
+                      <TextField
+                        variant="standard"
+                        fullWidth
+                        size="small"
+                        value={user.phone}
+                        onChange={(e) =>
+                          handleFieldChange(user.user_id, "phone", e.target.value)
+                        }
+                      />
+                    ) : (
+                      <Typography>{user.phone}</Typography>
+                    )}
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          ) : (
+            <Box
+              sx={{ height: "60vh", display: "flex", flexDirection: "column" }}
+            >
+              <TableContainer
+                component={Paper}
+                sx={{
+                  maxHeight: "70vh",
+                  overflow: "auto",
+                  "& .MuiTable-root": {
+                    tableLayout: "fixed",
+                    width: "100%",
+                  },
+                }}
+              >
+                <Table
+                  sx={{ minWidth: { xs: "100%", sm: 800 } }}
+                  aria-label="user management table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Username
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Role
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Email
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        First Name
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Last Name
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          backgroundColor: "white",
+                          fontWeight: "bold",
+                          minWidth: "120px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Phone
+                      </TableCell>
+                      <TableCell
+                        sx={{
                           minWidth: "150px",
-    position: "sticky",
-    top: 0,
-    zIndex: 3,
-    backgroundColor: "white", 
-                      }}
-                    >
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow
-                      key={user.user_id}
-                      sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}
-                    >
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <TextField
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={user.username}
-                            onChange={(e) =>
-                              handleFieldChange(
-                                user.user_id,
-                                "username",
-                                e.target.value
-                              )
-                            }
-                          />
-                        ) : (
-                          user.username
-                        )}
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Actions
                       </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <Box sx={{ marginLeft: "1%", marginRight: "1%" }}>
-                            <Autocomplete
-                              options={roleOptions}
-                              getOptionLabel={(option) =>
-                                option.role_name || "Unknown Role"
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow
+                        key={user.user_id}
+                        sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}
+                      >
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <TextField
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={user.username}
+                              onChange={(e) =>
+                                handleFieldChange(
+                                  user.user_id,
+                                  "username",
+                                  e.target.value
+                                )
                               }
-                              value={
-                                roleOptions.find(
-                                  (role) => role.role_name === user.role_type
-                                ) || null
-                              }
-                              onChange={(event, newValue) => {
-                                if (newValue) {
-                                  setModifiedUsers((prev) => ({
-                                    ...prev,
-                                    [user.user_id]: {
-                                      ...prev[user.user_id],
-                                      role_type: newValue.role_name,
-                                      role_id: newValue.role_id,
-                                    },
-                                  }));
-                                }
-                              }}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  variant="standard"
-                                  fullWidth
-                                />
-                              )}
                             />
-                          </Box>
-                        ) : (
-                          user.role_type
-                        )}
-                      </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <TextField
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={user.email}
-                            onChange={(e) =>
-                              handleFieldChange(
-                                user.user_id,
-                                "email",
-                                e.target.value
-                              )
-                            }
-                            onBlur={(e) =>
-                              handleEmailBlur(user.user_id, e.target.value)
-                            }
-                          />
-                        ) : (
-                          user.email
-                        )}
-                      </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <TextField
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={user.firstName}
-                            onChange={(e) =>
-                              handleFieldChange(
-                                user.user_id,
-                                "firstName",
-                                e.target.value
-                              )
-                            }
-                          />
-                        ) : (
-                          user.firstName
-                        )}
-                      </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <TextField
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={user.lastName}
-                            onChange={(e) =>
-                              handleFieldChange(
-                                user.user_id,
-                                "lastName",
-                                e.target.value
-                              )
-                            }
-                          />
-                        ) : (
-                          user.lastName
-                        )}
-                      </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <TextField
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={user.phone}
-                            onChange={(e) =>
-                              handleFieldChange(
-                                user.user_id,
-                                "phone",
-                                e.target.value
-                              )
-                            }
-                          />
-                        ) : (
-                          user.phone
-                        )}
-                      </TableCell>
-                      <TableCell
-                       sx={{
-    minWidth: "120px",
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-  }}>
-                        {editingRowId === user.user_id ? (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <Tooltip title="Cancel">
-                              <IconButton
-                                variant="contained"
-                                onClick={handleCancel}
-                              >
-                                <CancelIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Submit">
-                              <IconButton
-                                variant="contained"
-                                onClick={handleSubmit}
-                              >
-                                <SendIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </div>
-                        ) : (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <Tooltip title="Edit">
-                              <IconButton
-                                variant="contained"
-                                onClick={() => setEditingRowId(user.user_id)}
-                                disabled={editingRowId !== null}
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                              <span>
+                          ) : (
+                            user.username
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <Box sx={{ marginLeft: "1%", marginRight: "1%" }}>
+                              <Autocomplete
+                                options={roleOptions}
+                                getOptionLabel={(option) =>
+                                  option.role_name || "Unknown Role"
+                                }
+                                value={
+                                  roleOptions.find(
+                                    (role) => role.role_name === user.role_type
+                                  ) || null
+                                }
+                                onChange={(event, newValue) => {
+                                  if (newValue) {
+                                    setModifiedUsers((prev) => ({
+                                      ...prev,
+                                      [user.user_id]: {
+                                        ...prev[user.user_id],
+                                        role_type: newValue.role_name,
+                                        role_id: newValue.role_id,
+                                      },
+                                    }));
+                                  }
+                                }}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    fullWidth
+                                  />
+                                )}
+                              />
+                            </Box>
+                          ) : (
+                            user.role_type
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <TextField
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={user.email}
+                              onChange={(e) =>
+                                handleFieldChange(
+                                  user.user_id,
+                                  "email",
+                                  e.target.value
+                                )
+                              }
+                              onBlur={(e) =>
+                                handleEmailBlur(user.user_id, e.target.value)
+                              }
+                            />
+                          ) : (
+                            user.email
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <TextField
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={user.firstName}
+                              onChange={(e) =>
+                                handleFieldChange(
+                                  user.user_id,
+                                  "firstName",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          ) : (
+                            user.firstName
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <TextField
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={user.lastName}
+                              onChange={(e) =>
+                                handleFieldChange(
+                                  user.user_id,
+                                  "lastName",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          ) : (
+                            user.lastName
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <TextField
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={user.phone}
+                              onChange={(e) =>
+                                handleFieldChange(
+                                  user.user_id,
+                                  "phone",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          ) : (
+                            user.phone
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            minWidth: "120px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {editingRowId === user.user_id ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <Tooltip title="Cancel">
+                                <IconButton
+                                  variant="contained"
+                                  onClick={handleCancel}
+                                >
+                                  <CancelIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Submit">
+                                <IconButton
+                                  variant="contained"
+                                  onClick={handleSubmit}
+                                >
+                                  <SendIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <Tooltip title="Edit">
+                                <IconButton
+                                  variant="contained"
+                                  onClick={() => setEditingRowId(user.user_id)}
+                                  disabled={editingRowId !== null}
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <span>
+                                  <IconButton
+                                    variant="contained"
+                                    onClick={() =>
+                                      handleDeleteClick(user.user_id)
+                                    }
+                                    disabled={
+                                      editingRowId !== null ||
+                                      rolename !== "Admin"
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                              <Tooltip title="Reset Password">
                                 <IconButton
                                   variant="contained"
                                   onClick={() =>
-                                    handleDeleteClick(user.user_id)
+                                    handleOpenPasswordModal(user.user_id)
                                   }
-                                  disabled={
-                                    editingRowId !== null ||
-                                    rolename !== "Admin"
-                                  }
+                                  disabled={editingRowId !== null}
                                 >
-                                  <DeleteIcon />
+                                  <LockResetIcon />
                                 </IconButton>
-                              </span>
-                            </Tooltip>
-                            <Tooltip title="Reset Password">
-                              <IconButton
-                                variant="contained"
-                                onClick={() =>
-                                  handleOpenPasswordModal(user.user_id)
-                                }
-                                disabled={editingRowId !== null}
-                              >
-                                <LockResetIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
+                              </Tooltip>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
         </>
       )}
       <Snackbar
