@@ -102,7 +102,7 @@ export default function UDVMaster() {
   };
 
   const handleOpenModal = (type, records, count) => {
-    console.log(`🔔 Opening modal for ${type} - Count: ${count}, Records:`, records);
+    // console.log(`🔔 Opening modal for ${type} - Count: ${count}, Records:`, records);
     if (count === 0) return;
 
     setModalData({
@@ -121,7 +121,7 @@ export default function UDVMaster() {
   const fetchUploadHistory = async () => {
     try {
       setIsLoadingHistory(true);
-      console.log(`📋 Fetching upload history for entity: ${selectedEntity}`);
+      // console.log(`📋 Fetching upload history for entity: ${selectedEntity}`);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/udv/history?entity=${selectedEntity}&limit=50&offset=0`,
@@ -145,7 +145,7 @@ export default function UDVMaster() {
       }
 
       const data = await response.json();
-      console.log(`✅ Received ${data.uploads?.length || 0} uploads from server`);
+      // console.log(`✅ Received ${data.uploads?.length || 0} uploads from server`);
       setUploadHistory(data.uploads || []);
       setCurrentPage(1);
     } catch (error) {
@@ -234,6 +234,24 @@ export default function UDVMaster() {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Read and log Excel file data
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        // console.log("📄 Excel File Data:", jsonData);
+        // console.log("📊 Total Records:", jsonData.length);
+        // console.log("📋 All Excel Data:", jsonData);
+      } catch (error) {
+        console.error("Error reading Excel file:", error);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+
     setIsUploading(true);
     try {
       const formData = new FormData();
@@ -261,7 +279,7 @@ export default function UDVMaster() {
 
       const responseData = await response.json();
 
-      console.log("✔ Upload Response:", responseData);
+      // console.log("✔ Upload Response:", responseData);
 
       const uploadRecord = {
         fileName: responseData.fileName || file.name,
@@ -275,10 +293,10 @@ export default function UDVMaster() {
         failedRecords: responseData.failedRecords || [],
       };
 
-      console.log("📊 Preparing to fetch upload history...");
+      // console.log("📊 Preparing to fetch upload history...");
       // Refresh history from API
       await fetchUploadHistory();
-      console.log("✅ History fetched successfully");
+      // console.log("✅ History fetched successfully");
 
       const hasIssues = responseData.failedCount > 0;
       const statusSummary = selectedEntity === "inventory"
@@ -651,19 +669,29 @@ export default function UDVMaster() {
                         Object.keys(modalData.records[0])
                           .filter(
                             (key) =>
-                              key !== "error" && key !== "reason" && key !== "action" && key !== "newQuantity"
+                              key !== "error" &&
+                              key !== "reason" &&
+                              key !== "action" &&
+                              key !== "newQuantity" &&
+                              key !== "_status"
                           )
                           .map((key) => (
                             <TableCell key={key} sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                              {key}
+                              {String(key)
+                                .replace(/_/g, " ")
+                                .charAt(0)
+                                .toUpperCase() +
+                                String(key)
+                                  .replace(/_/g, " ")
+                                  .slice(1)}
                             </TableCell>
                           ))}
                       {(modalData.type === "failed" || modalData.type === "duplicates") && (
                         <TableCell sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                          {modalData.type === "failed" ? "Error" : "Status"}
+                          {modalData.type === "failed" ? "Error Reason" : "Status/Reason"}
                         </TableCell>
                       )}
-                      {modalData.type === "duplicates" && modalData.records[0]?.newQuantity !== undefined && (
+                      {modalData.type === "duplicates" && modalData.records.some((r) => r.newQuantity !== undefined) && (
                         <TableCell sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                           New Quantity
                         </TableCell>
@@ -674,7 +702,14 @@ export default function UDVMaster() {
                     {modalData.records.map((record, index) => (
                       <TableRow key={index} sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}>
                         {Object.entries(record)
-                          .filter(([key]) => key !== "error" && key !== "reason" && key !== "action" && key !== "newQuantity")
+                          .filter(
+                            ([key]) =>
+                              key !== "error" &&
+                              key !== "reason" &&
+                              key !== "action" &&
+                              key !== "newQuantity" &&
+                              key !== "_status"
+                          )
                           .map(([key, value]) => (
                             <TableCell key={key} sx={{ fontSize: "0.875rem" }}>
                               <Typography variant="caption">
@@ -687,21 +722,26 @@ export default function UDVMaster() {
                             <Typography
                               variant="caption"
                               sx={{
-                                color: modalData.type === "failed" ? "error.main" : "info.main",
+                                color: modalData.type === "failed" ? "error.main" : "warning.main",
                                 fontWeight: "500",
                               }}
                             >
-                              {record.error || record.reason || (record.action === "updated" ? "Quantity Updated" : "Already Exists")}
+                              {record.error ||
+                                record.reason ||
+                                (record.action === "updated"
+                                  ? "Quantity Updated"
+                                  : "Already Exists")}
                             </Typography>
                           </TableCell>
                         )}
-                        {modalData.type === "duplicates" && record.newQuantity !== undefined && (
-                          <TableCell sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
-                            <Typography variant="caption" sx={{ color: "success.main" }}>
-                              {record.newQuantity}
-                            </Typography>
-                          </TableCell>
-                        )}
+                        {modalData.type === "duplicates" &&
+                          record.newQuantity !== undefined && (
+                            <TableCell sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
+                              <Typography variant="caption" sx={{ color: "success.main" }}>
+                                {record.newQuantity}
+                              </Typography>
+                            </TableCell>
+                          )}
                       </TableRow>
                     ))}
                   </TableBody>
