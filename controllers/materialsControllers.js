@@ -23,10 +23,10 @@ const handleSaveClick = (
   setEditRowId(null);
   setEditedData({});
 
-  setTimeout(() => {
-    setShowError(false);
-    window.location.reload();
-  }, 2000);
+  // setTimeout(() => {
+  //   setShowError(false);
+  //   window.location.reload();
+  // }, 2000);
 };
 
 // Cancel Edit
@@ -97,10 +97,10 @@ const handleSaveNewRow = async (
     setErrorSeverity("success");
     setErrorMessage("Material added successfully.");
 
-    setTimeout(() => {
-      setShowError(false);
-      window.location.reload();
-    }, 2000);
+    // setTimeout(() => {
+    //   setShowError(false);
+    //   window.location.reload();
+    // }, 2000);
   }
 };
 
@@ -158,6 +158,41 @@ const handleDeleteClick = (rowId, setDeleteRowId, setOpenDeleteDialog) => {
   setOpenDeleteDialog(true);
 };
 
+// const confirmDelete = async (
+//   token,
+//   setRows,
+//   deleteRowId,
+//   setOpenDeleteDialog,
+//   setShowError,
+//   setErrorMessage,
+//   setErrorSeverity
+// ) => {
+//   setRows((prevRows) => prevRows.filter((row) => row.id !== deleteRowId));
+//   setOpenDeleteDialog(false);
+
+//   const response = await fetch(
+//     `${process.env.NEXT_PUBLIC_API_URL}/inventory/${deleteRowId}`,
+//     {
+//       method: "DELETE",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     }
+//   );
+
+//   if (!response.ok) {
+//     setShowError(response.statusText);
+//   } else {
+//     setShowError(true);
+//     setErrorSeverity("success");
+//     setErrorMessage("Material deleted successfully.");
+
+//     setTimeout(() => {
+//       setShowError(false);
+//     }, 2000);
+//   }
+// };
 const confirmDelete = async (
   token,
   setRows,
@@ -167,32 +202,52 @@ const confirmDelete = async (
   setErrorMessage,
   setErrorSeverity
 ) => {
-  setRows((prevRows) => prevRows.filter((row) => row.id !== deleteRowId));
-  setOpenDeleteDialog(false);
+  try {
+    if (!token) throw new Error("No token found");
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/inventory/${deleteRowId}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/inventory/${deleteRowId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json(); // IMPORTANT
+
+    if (!response.ok) {
+      // Show backend message
+      setShowError(true);
+      setErrorSeverity("error");
+      setErrorMessage(data.error || "Failed to delete item");
+      setOpenDeleteDialog(false);
+      return false;
     }
-  );
 
-  if (!response.ok) {
-    setShowError(response.statusText);
-  } else {
+    // Remove from UI
+    setRows((prev) =>
+      prev.filter((row) => row.inventory_id !== deleteRowId)
+    );
+
     setShowError(true);
     setErrorSeverity("success");
     setErrorMessage("Material deleted successfully.");
+    setOpenDeleteDialog(false);
 
-    setTimeout(() => {
-      setShowError(false);
-    }, 2000);
+    return true;
+  } catch (err) {
+    setShowError(true);
+    setErrorSeverity("error");
+    setErrorMessage(err.message || "Error deleting item");
+    setOpenDeleteDialog(false);
+    return false;
   }
 };
+
+
 
 const scrollToTopButtonDisplay = (event, setShowFab) => {
   const { scrollTop } = event.target;

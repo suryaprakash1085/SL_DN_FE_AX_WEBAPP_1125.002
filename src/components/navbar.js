@@ -574,6 +574,9 @@ export default function Navbar({ pageName, hasChanges }) {
     setOpenResetConfirmation(false);
   };
 
+    // const showBackButton = pageName !== "" || companyDetails?.page_type === "tab");
+
+
   return (
     <div>
       <ToastContainer />
@@ -589,18 +592,21 @@ export default function Navbar({ pageName, hasChanges }) {
               order: { xs: 1, sm: 0, md: 0, lg: 0 },
             }}
           >
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              {pageName !== "" && <BackButton hasChanges={hasChanges} />}
-              <h1
-                style={{
-                  marginLeft: "10px",
-                  color: "white",
-                  fontSize: "2rem",
-                }}
-              >
-                {pageName}
-              </h1>
-            </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+  { ( companyDetails?.page_type === "tiles") &&
+    <BackButton hasChanges={hasChanges} />
+  }
+  <h1
+    style={{
+      marginLeft: "10px",
+      color: "white",
+      fontSize: "2rem",
+    }}
+  >
+    {pageName}
+  </h1>
+</div>
+
           </Grid>
 
           {/* //? App Logo */}

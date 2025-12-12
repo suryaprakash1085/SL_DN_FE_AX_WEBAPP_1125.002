@@ -82,6 +82,18 @@ export default function TableUI({
   let getOwnerName = async (ownerId) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/customer/getOwnerName/${ownerId}`;
 
+    // const response = await fetch(url, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+
+    // let ownerName = await response.json();
+    // // console.log({ ownerName });
+    // return ownerName;
+     try {
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -90,9 +102,22 @@ export default function TableUI({
       },
     });
 
-    let ownerName = await response.json();
-    // console.log({ ownerName });
-    return ownerName;
+   if (!ownerId) return { username: "Unknown" };
+
+    // Check content type before parsing JSON
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      return data;
+    } else {
+      const text = await response.text(); // fallback: get raw response
+      console.warn("API returned non-JSON:", text);
+      return { username: "Unknown" };
+    }
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    return { username: "Unknown" };
+  }
   };
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -138,7 +163,7 @@ export default function TableUI({
     };
 
     return (
-      <Box>
+       <Box display="flex" gap={1} alignItems="center">
         {specialActions &&
           specialActions.map((iconObj, index) => (
             <Tooltip key={index} title={iconObj.tooltip || ""}>
@@ -154,12 +179,16 @@ export default function TableUI({
           ))}
         <IconButton
           onClick={async () => {
-            let owner = await getOwnerName(reorderedRow.leads_owner);
-            reorderedRow.leads_owner = owner.username;
-            // console.log({ rere: reorderedRow });
-            setSelectedRow(reorderedRow);
-            // console.log({ reorderedRow });
-            setOpenCreateUpdateModal(true);
+ try {
+      const owner = await getOwnerName(reorderedRow.leads_owner);
+      const updatedRow = { ...reorderedRow, leads_owner: owner.username || reorderedRow.leads_owner };
+      setSelectedRow(updatedRow);
+      setOpenCreateUpdateModal(true);
+    } catch (err) {
+      console.error("Error fetching owner:", err);
+      setSelectedRow(reorderedRow); // fallback in case API fails
+      setOpenCreateUpdateModal(true);
+    }
           }}
         >
           <EditIcon />
@@ -227,14 +256,31 @@ export default function TableUI({
   };
 
   return (
+//     <Box
+//   sx={{
+//     "& .sticky-actions-header": {
+//       position: "sticky",
+//       top: 0,
+//       zIndex: 3,
+//       backgroundColor: "#fff"
+//     }
+//   }}
+// >
     <TableContainer
       id="scrollable-table"
       component={Paper}
       sx={{
         maxHeight: "70vh",
         overflowY: "auto",
+        "& .sticky-header": {
+  position: "sticky",
+  top: 0,
+  zIndex: 5,
+  background: "#fff"
+},
         "@media (max-width: 600px)": {
-          padding: "10px",
+          // padding: "10px",
+           paddingBottom: "80px", 
           backgroundColor: "#f9f9f9",
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         },
@@ -251,13 +297,7 @@ export default function TableUI({
         }}
         aria-label="simple table"
       >
-        <TableHead
-          style={{
-            position: "sticky",
-            top: 0,
-            backgroundColor: "white",
-          }}
-        >
+        <TableHead className="sticky-header">
           <TableRow>
             {/* Add select all checkbox in header */}
             {selectedUserId && (
@@ -279,7 +319,7 @@ export default function TableUI({
             {columns.map((column, index) => (
               <TableCell key={index}>{column.headerName}</TableCell>
             ))}
-            {showActions ? <TableCell>Actions</TableCell> : <></>}
+            {showActions ?  <TableCell>Actions</TableCell> : <></>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -322,7 +362,7 @@ export default function TableUI({
 
                 {/*  Edit and Delete Buttons */}
                 {showActions ? (
-                  <TableCell key="more" sx={{ zIndex: 1, textAlign: "left" }}>
+                  <TableCell key="more" sx={{ zIndex: 2, textAlign: "left",minWidth: 200, whiteSpace: "nowrap" }}>
                     {actions(row)}
                   </TableCell>
                 ) : null}
@@ -550,7 +590,8 @@ export default function TableUI({
       {/* Show exchange button when rows are selected */}
       {selectedRows.length > 0 && (
   <Box sx={{ 
-    position: 'fixed', 
+    position: 'sticky',
+    mt:2, 
     bottom: 2, 
     right: 0, 
     width: 'auto',
@@ -560,6 +601,7 @@ export default function TableUI({
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '8px', 
+    marginTop: '10px',
     // boxShadow: '0 -2px 10px rgba(0,0,0,0.15)' // Enhanced shadow for better visibility
   }}>
     <Button
@@ -576,5 +618,6 @@ export default function TableUI({
 
 
     </TableContainer>
+  
   );
 }

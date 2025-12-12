@@ -46,6 +46,7 @@ import {
   DialogTitle,
   Typography,
   Fab,
+  useMediaQuery,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -98,7 +99,8 @@ export default function Inventory() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
-  const limit = 10;
+  const limit = 100;
+  const isMobile = useMediaQuery("(max-width:900px)");
   const [currentTransactionDetails, setCurrentTransactiondetails] = useState({
     inventory_name: "",
     stock: "",
@@ -481,20 +483,16 @@ export default function Inventory() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TableContainer
-              component={Paper}
+          {isMobile ? (
+            <Box
               id="scrollable-table"
-              style={{
+              sx={{
                 maxHeight: "70vh",
-                // height:"80vh",
                 overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                pb: 2,
               }}
               onScroll={(event) => {
                 scrollToTopButtonDisplay(event, setShowFab);
@@ -516,432 +514,526 @@ export default function Inventory() {
                 );
               }}
             >
-              <Table>
-                <TableHead>
-                  <TableRow
-                    style={{
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "white",
+              {rows.length > 0 ? (
+                rows.map((row, index) => (
+                  <Paper
+                    key={index}
+                    sx={{
+                      p: 2,
+                      backgroundColor:
+                        editRowId && row.inventory_id === editRowId
+                          ? "#f5f5f5"
+                          : "white",
                     }}
                   >
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Material ID
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Category
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Name
-                    </TableCell>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                      {row.part_name || "Unnamed Item"}
+                    </Typography>
 
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Description
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      UOM
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Available Quantity
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Price
-                    </TableCell>
-                    <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* {isAdding && (
-                    <TableRow>
-                      <TableCell>
-                        <TextField
-                          name="inventory_id"
-                          value={editedData.inventory_id || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          placeholder="Enter Material ID"
-                          disabled
-                        />
-                      </TableCell>
+                    <Box sx={{ display: "grid", rowGap: 1, columnGap: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Material ID
+                      </Typography>
+                      <Typography>{row.inventory_id || "-"}</Typography>
 
-                      <TableCell>
-                        <Select
-                          name="category"
-                          value={editedData.category || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          displayEmpty
-                        >
-                          <MenuItem value="" disabled>
-                            Select Category
-                          </MenuItem>
-                          <MenuItem value="spares">Spares</MenuItem>
-                          <MenuItem value="accessories">Accessories</MenuItem>
-                          <MenuItem value="services">Services</MenuItem>
-                        </Select>
-                      </TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        Category
+                      </Typography>
+                      <Typography>{row.category || "-"}</Typography>
 
-                      <TableCell>
-                        <TextField
-                          name="part_name"
-                          value={editedData.part_name || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          placeholder="Enter Name"
-                        />
-                      </TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        Description
+                      </Typography>
+                      <Typography>{row.description || "-"}</Typography>
 
-                      <TableCell>
-                        <TextField
-                          name="description"
-                          value={editedData.description || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          placeholder="Enter Description"
-                        />
-                      </TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        UOM
+                      </Typography>
+                      <Typography>{row.uom || "-"}</Typography>
 
-                      <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        Available Quantity
+                      </Typography>
+                      {editRowId === row.inventory_id ? (
                         <TextField
                           name="quantity"
                           value={editedData.quantity || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*$/.test(value)) {
+                              handleInputChange(e, setEditedData);
+                            }
+                          }}
                           variant="standard"
-                          placeholder="Enter Available Quantity"
                         />
-                      </TableCell>
+                      ) : (
+                        <Typography>{row.quantity}</Typography>
+                      )}
 
-                      <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        Price
+                      </Typography>
+                      {editRowId === row.inventory_id ? (
                         <TextField
                           name="price"
                           value={editedData.price || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          placeholder="Enter Price"
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <Select
-                          name="uom"
-                          value={editedData.uom || ""}
-                          onChange={(e) => handleInputChange(e, setEditedData)}
-                          variant="standard"
-                          displayEmpty
-                        >
-                          {uomOptions.map((uom) => (
-                            <MenuItem key={uom.id} value={uom.unit_shortcode}>
-                              {uom.unit_name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </TableCell>
-
-                      <TableCell>
-                        <IconButton
-                          onClick={() => {
-                            const quantity = parseInt(editedData.quantity, 10);
-                            const price = parseInt(editedData.price, 10);
-
-                            if (!editedData.category || !editedData.part_name) {
-                              setErrorMessage("Category and Name are required.");
-                              setShowError(true);
-                            } else if (isNaN(quantity) || isNaN(price)) {
-                              setErrorMessage("Available Quantity and Price must be integers.");
-                              setShowError(true);
-                            } else {
-                              let added = handleSaveNewRow(
-                                token,
-                                { ...editedData, quantity, price },
-                                setRows,
-                                setEditRowId,
-                                setEditedData,
-                                setIsAdding,
-                                setErrorMessage,
-                                setShowError
-                              );
-
-                              added ? location.reload() : null;
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*$/.test(value)) {
+                              handleInputChange(e, setEditedData);
                             }
                           }}
-                        >
-                          <SaveIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={() =>
-                            handleCancelClick(
-                              setEditRowId,
-                              setEditedData,
-                              setIsAdding
-                            )
-                          }
-                        >
-                          <CancelIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  )} */}
-                  {rows.length > 0 ? (
-                    rows.map((row, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          backgroundColor:
-                            editRowId && row.inventory_id === editRowId
-                              ? "lightGray"
-                              : "",
-                        }}
-                      >
-                        <TableCell>{row.inventory_id}</TableCell>
+                          variant="standard"
+                        />
+                      ) : (
+                        <Typography>{row.price}</Typography>
+                      )}
+                    </Box>
 
-                        <TableCell>
-                          {/* {editRowId === row.inventory_id ? (
-                            <Select
-                              name="category"
-                              value={editedData.category || ""}
-                              onChange={(e) => handleInputChange(e, setEditedData)}
-                              variant="standard"
-                              displayEmpty
-                            >
-                              <MenuItem value="spares">Spares</MenuItem>
-                              <MenuItem value="accessories">Accessories</MenuItem>
-                              <MenuItem value="services">Services</MenuItem>
-                            </Select>
-                          ) : (
-                            row.category
-                          )} */}
-                          {row.category || ""}
-                        </TableCell>
-
-                        <TableCell>
-                          {/* {editRowId === row.inventory_id ? (
-                            <TextField
-                              name="part_name"
-                              value={editedData.part_name || ""}
-                              onChange={(e) => handleInputChange(e, setEditedData)}
-                              variant="standard"
-                            />
-                          ) : (
-                            row.part_name
-                          )} */}
-                          {row.part_name}
-                        </TableCell>
-
-                        <TableCell>
-                          {/* {editRowId === row.inventory_id ? (
-                            <TextField
-                              name="description"
-                              value={editedData.description || ""}
-                              onChange={(e) => handleInputChange(e, setEditedData)}
-                              variant="standard"
-                            />
-                          ) : (
-                            row.description
-                          )} */}
-                          {row.description || ""}
-                        </TableCell>
-
-                        <TableCell>
-                          {/* {editRowId === row.inventory_id ? (
-                            <Select
-                              name="uom"
-                              value={editedData.uom || ""}
-                              onChange={(e) => handleInputChange(e, setEditedData)}
-                              variant="standard"
-                              displayEmpty
-                            >
-                              {uomOptions.map((uom) => (
-                                <MenuItem key={uom.id} value={uom.unit_shortcode}>
-                                  {uom.unit_name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          ) : (
-                            row.uom || "N/A"
-                          )} */}
-                          {row.uom || ""}
-                        </TableCell>
-
-                        <TableCell>
-                          {editRowId === row.inventory_id ? (
-                            <TextField
-                              name="quantity"
-                              value={editedData.quantity || ""}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\d*$/.test(value)) {
-                                  // Allow only non-negative integers
-                                  handleInputChange(e, setEditedData);
-                                }
-                              }}
-                              variant="standard"
-                            />
-                          ) : (
-                            row.quantity
-                          )}
-                        </TableCell>
-
-                        <TableCell>
-                          {editRowId === row.inventory_id ? (
-                            <TextField
-                              name="price"
-                              value={editedData.price || ""}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (/^\d*$/.test(value)) {
-                                  // Allow only non-negative integers
-                                  handleInputChange(e, setEditedData);
-                                }
-                              }}
-                              variant="standard"
-                            />
-                          ) : (
-                            row.price
-                          )}
-                        </TableCell>
-
-                        <TableCell>
-                          {editRowId === row.inventory_id ? (
-                            <>
-                              <IconButton
-                                onClick={() => {
-                                  // Validate that quantity and price are integers
-                                  const quantity = parseInt(
-                                    editedData.quantity,
-                                    10
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                        mt: 2,
+                      }}
+                    >
+                      {editRowId === row.inventory_id ? (
+                        <>
+                          <Tooltip title="Save">
+                            <IconButton
+                              onClick={() => {
+                                const quantity = parseInt(editedData.quantity, 10);
+                                const price = parseInt(editedData.price, 10);
+                                if (isNaN(quantity) || isNaN(price)) {
+                                  setErrorMessage(
+                                    "Available Quantity and Price must be integers."
                                   );
-                                  const price = parseInt(editedData.price, 10);
-
-                                  if (isNaN(quantity) || isNaN(price)) {
-                                    setErrorMessage(
-                                      "Available Quantity and Price must be integers."
-                                    );
-                                    setShowError(true);
-                                  } else {
-                                    handleSaveClick(
-                                      row.inventory_id,
-                                      { ...editedData, quantity, price },
-                                      setRows,
-                                      setEditRowId,
-                                      setEditedData
-                                    );
-                                  }
-                                }}
-                              >
-                                <SaveIcon />
-                              </IconButton>
-                              <IconButton
-                                onClick={() =>
-                                  handleCancelClick(
+                                  setShowError(true);
+                                } else {
+                                  handleSaveClick(
+                                    row.inventory_id,
+                                    { ...editedData, quantity, price },
+                                    setRows,
                                     setEditRowId,
-                                    setEditedData,
-                                    setIsAdding
-                                  )
+                                    setEditedData
+                                  );
                                 }
-                              >
-                                <CancelIcon />
-                              </IconButton>
-                            </>
-                          ) : (
-                            <>
-                              <Tooltip title="Edit">
-                                <IconButton
-                                  disabled={editRowId}
-                                  onClick={() =>
-                                    handleEditClick(
-                                      row,
-                                      setEditRowId,
-                                      setEditedData
-                                    )
-                                  }
-                                >
-                                  <EditIcon />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Delete">
-                                <IconButton
-                                  disabled={editRowId ? true : false}
-                                  onClick={() =>
-                                    handleDeleteClick(
-                                      row.inventory_id,
-                                      setDeleteRowId,
-                                      setOpenDeleteDialog
-                                    )
-                                  }
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="View Transactions">
-                                <IconButton
-                                  disabled={editRowId}
-                                  onClick={() => {
-                                    setCurrentTransactiondetails({
-                                      inventory_name: row.part_name,
-                                      stock: row.quantity,
-                                    });
-                                    handleOpenTransaction(
-                                      row.inventory_id,
-                                      token,
-                                      setTranscationData,
-                                      setOpenTranscationModalState
-                                    );
-                                  }}
-                                >
-                                  <ContentPasteSearchIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center">
-                        No Items Found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              {/* Back to Top FAB */}
+                              }}
+                            >
+                              <SaveIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Cancel">
+                            <IconButton
+                              onClick={() =>
+                                handleCancelClick(
+                                  setEditRowId,
+                                  setEditedData,
+                                  setIsAdding
+                                )
+                              }
+                            >
+                              <CancelIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              disabled={editRowId}
+                              onClick={() =>
+                                handleEditClick(row, setEditRowId, setEditedData)
+                              }
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              disabled={!!editRowId}
+                              onClick={() =>
+                                handleDeleteClick(
+                                  row.inventory_id,
+                                  setDeleteRowId,
+                                  setOpenDeleteDialog
+                                )
+                              }
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="View Transactions">
+                            <IconButton
+                              disabled={!!editRowId}
+                              onClick={() => {
+                                setCurrentTransactiondetails({
+                                  inventory_name: row.part_name,
+                                  stock: row.quantity,
+                                });
+                                handleOpenTransaction(
+                                  row.inventory_id,
+                                  token,
+                                  setTranscationData,
+                                  setOpenTranscationModalState
+                                );
+                              }}
+                            >
+                              <ContentPasteSearchIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
+                    </Box>
+                  </Paper>
+                ))
+              ) : (
+                <Paper sx={{ p: 2, textAlign: "center" }}>No Items Found</Paper>
+              )}
               {showFab && (
                 <Fab
                   size="small"
                   onClick={handleScrollToTop}
-                  style={{
+                  sx={{
                     backgroundColor: "white",
                     color: "primary",
-                    position: "absolute",
-                    bottom: 40,
-                    right: 40,
+                    position: "sticky",
+                    bottom: 16,
+                    left: "calc(100% - 56px)",
                     zIndex: 10,
                   }}
                 >
                   <ArrowUpwardIcon />
                 </Fab>
               )}
-            </TableContainer>
-          </div>
+            </Box>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TableContainer
+                component={Paper}
+                id="scrollable-table"
+                style={{
+                  maxHeight: "70vh",
+                  // height:"80vh",
+                  overflowY: "auto",
+                }}
+                onScroll={(event) => {
+                  scrollToTopButtonDisplay(event, setShowFab);
+                  infiniteScroll(
+                    event,
+                    token,
+                    setRows,
+                    searchQuery,
+                    setOpenSnackbar,
+                    setSnackbarMessage,
+                    setSnackbarSeverity,
+                    limit,
+                    isLoading,
+                    setIsLoading,
+                    hasMore,
+                    setHasMore,
+                    offset,
+                    setOffset
+                  );
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow
+                      style={{
+                        position: "sticky",
+                        top: 0,
+                        backgroundColor: "white",
+                        zIndex: 3,
+                      }}
+                    >
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Material ID
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Category
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Name
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Description
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        UOM
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Available Quantity
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Price
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          padding: "10px 16px",
+                          fontWeight: "bold",
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 3,
+                          backgroundColor: "white",
+                        }}
+                      >
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.length > 0 ? (
+                      rows.map((row, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            backgroundColor:
+                              editRowId && row.inventory_id === editRowId
+                                ? "lightGray"
+                                : "",
+                          }}
+                        >
+                          <TableCell>{row.inventory_id}</TableCell>
+
+                          <TableCell>{row.category || ""}</TableCell>
+
+                          <TableCell>{row.part_name}</TableCell>
+
+                          <TableCell>{row.description || ""}</TableCell>
+
+                          <TableCell>{row.uom || ""}</TableCell>
+
+                          <TableCell>
+                            {editRowId === row.inventory_id ? (
+                              <TextField
+                                name="quantity"
+                                value={editedData.quantity || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (/^\d*$/.test(value)) {
+                                    handleInputChange(e, setEditedData);
+                                  }
+                                }}
+                                variant="standard"
+                              />
+                            ) : (
+                              row.quantity
+                            )}
+                          </TableCell>
+
+                          <TableCell>
+                            {editRowId === row.inventory_id ? (
+                              <TextField
+                                name="price"
+                                value={editedData.price || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (/^\d*$/.test(value)) {
+                                    handleInputChange(e, setEditedData);
+                                  }
+                                }}
+                                variant="standard"
+                              />
+                            ) : (
+                              row.price
+                            )}
+                          </TableCell>
+
+                          <TableCell>
+                            {editRowId === row.inventory_id ? (
+                              <>
+                                <IconButton
+                                  onClick={() => {
+                                    const quantity = parseInt(
+                                      editedData.quantity,
+                                      10
+                                    );
+                                    const price = parseInt(editedData.price, 10);
+
+                                    if (isNaN(quantity) || isNaN(price)) {
+                                      setErrorMessage(
+                                        "Available Quantity and Price must be integers."
+                                      );
+                                      setShowError(true);
+                                    } else {
+                                      handleSaveClick(
+                                        row.inventory_id,
+                                        { ...editedData, quantity, price },
+                                        setRows,
+                                        setEditRowId,
+                                        setEditedData
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <SaveIcon />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() =>
+                                    handleCancelClick(
+                                      setEditRowId,
+                                      setEditedData,
+                                      setIsAdding
+                                    )
+                                  }
+                                >
+                                  <CancelIcon />
+                                </IconButton>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="Edit">
+                                  <IconButton
+                                    disabled={editRowId}
+                                    onClick={() =>
+                                      handleEditClick(
+                                        row,
+                                        setEditRowId,
+                                        setEditedData
+                                      )
+                                    }
+                                  >
+                                    <EditIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete">
+                                  <IconButton
+                                    disabled={editRowId ? true : false}
+                                    onClick={() =>
+                                      handleDeleteClick(
+                                        row.inventory_id,
+                                        setDeleteRowId,
+                                        setOpenDeleteDialog
+                                      )
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="View Transactions">
+                                  <IconButton
+                                    disabled={editRowId}
+                                    onClick={() => {
+                                      setCurrentTransactiondetails({
+                                        inventory_name: row.part_name,
+                                        stock: row.quantity,
+                                      });
+                                      handleOpenTransaction(
+                                        row.inventory_id,
+                                        token,
+                                        setTranscationData,
+                                        setOpenTranscationModalState
+                                      );
+                                    }}
+                                  >
+                                    <ContentPasteSearchIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={8} align="center">
+                          No Items Found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                {showFab && (
+                  <Fab
+                    size="small"
+                    onClick={handleScrollToTop}
+                    style={{
+                      backgroundColor: "white",
+                      color: "primary",
+                      position: "absolute",
+                      bottom: 40,
+                      right: 40,
+                      zIndex: 10,
+                    }}
+                  >
+                    <ArrowUpwardIcon />
+                  </Fab>
+                )}
+              </TableContainer>
+            </div>
+          )}
         </Box>
       </Box>
 

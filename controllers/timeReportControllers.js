@@ -47,6 +47,8 @@ const handleDateClick = (date, setVisibleDates) => {
 };
 
 const handleSearch = (searchQuery, usersData, setFilteredUsers) => {
+  console.log("Handle serach called");
+  
   const query = searchQuery.toLowerCase();
   if (query === "") {
     setFilteredUsers(usersData);
@@ -121,6 +123,7 @@ function convertTo24Hour(hour, period) {
 }
 
 const fetchUsers = async (setUsersData) => {
+    console.log("🔥 API CALL: fetchUsers() STARTED");
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/users`,
@@ -135,6 +138,8 @@ const fetchUsers = async (setUsersData) => {
       throw new Error("Network response was not ok");
     }
     const usersData = await response.json();
+        console.log("✅ fetchUsers RESPONSE:", usersData); // <-- check this
+
     setUsersData(usersData);
   } catch (error) {
     console.log("Error fetching users:", error);
@@ -156,6 +161,7 @@ const fetchTimeEntries = async (setTimeEntriesData) => {
       throw new Error("Network response was not ok");
     }
     const timeEntriesData = await response.json();
+     console.log("✅ fetchTimeEntries RESPONSE:", timeEntriesData);
     const formattedTimeEntriesData = timeEntriesData.map((entry) => ({
       ...entry,
       date: new Date(entry.date).toLocaleDateString("en-GB", {

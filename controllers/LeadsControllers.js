@@ -51,7 +51,11 @@ const getAllLeads = async (
         newCustomers = newCustomers.filter(
           (customer) => customer.type === "BlackList"
         );
+      }else if (filterType === "All") {
+        // No filtering needed for "All"
+
       }
+
 
       // Sort the customers
       newCustomers.sort((a, b) => {
@@ -159,11 +163,7 @@ const filterRows = async (
 ) => {
   try {
     const response = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/customer/leads/search?search=${searchQuery}&filter=${
-        filterType || "All"
-      }&limit=${limit}&offset=${offset}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/customer/leads/search?search=${searchQuery}&filter=${filterType || "All"}&limit=${limit}&offset=${offset}`,
       {
         method: "GET",
         headers: {
@@ -173,33 +173,116 @@ const filterRows = async (
       }
     );
 
-    setHasMore(hasMore);
-
     const data = await response.json();
 
     if (response.ok) {
-      // Sort the filtered results
       const sortedData = data.sort((a, b) => {
         if (a.type === "BlackListed" && b.type !== "BlackList") return 1;
-        if (a.type !== "BlackList" && b.type === "BlockList") return -1;
+        if (a.type !== "BlackList" && b.type === "BlackList") return -1;
         return 0;
       });
+
       setRows(sortedData);
       setOffset(offset + limit);
+      setHasMore(data.length === limit);
+
+      if (sortedData.length === 0) {
+        showAlert({
+          openAlert: true,
+          message: "No data found",
+          severity: "warning",
+          duration: 2000,
+        });
+      }
     } else {
       setRows([]);
+      showAlert({
+        openAlert: true,
+        message: "Error fetching search results. Please try again.",
+        severity: "error",
+        duration: 2000,
+      });
     }
   } catch (error) {
     setRows([]);
-    const alertData = {
+    showAlert({
       openAlert: true,
-      message: "Error fetching search results. Please try again.",
+      message: "Network error. Please try again.",
       severity: "error",
       duration: 2000,
-    };
-    showAlert(alertData);
+    });
   }
 };
+
+
+// const filterRows = async (
+//   token,
+//   rows,
+//   setRows,
+//   searchQuery,
+//   filterType,
+//   showAlert,
+//   hasMore,
+//   setHasMore,
+//   limit,
+//   offset,
+//   setOffset
+// ) => {
+//   try {
+//     const response = await fetch(
+//       `${
+//         process.env.NEXT_PUBLIC_API_URL
+//       }/customer/leads/search?search=${searchQuery}&filter=${
+//         filterType || "All"
+//       }&limit=${limit}&offset=${offset}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     setHasMore(hasMore);
+
+//     const data = await response.json();
+
+//     if (response.ok) {
+//       // Sort the filtered results
+//       const sortedData = data.sort((a, b) => {
+//         if (a.type === "BlackListed" && b.type !== "BlackList") return 1;
+//         if (a.type !== "BlackList" && b.type === "BlackList") return -1;
+//         return 0;
+//       });
+//       setRows(sortedData);
+//       setOffset(offset + limit);
+//     } else {
+//       setRows([]);
+//     }
+//   } catch (error) {
+//     setRows([]);
+//     const alertData = {
+//       openAlert: true,
+//       message: "Error fetching search results. Please try again.",
+//       severity: "error",
+//       duration: 2000,
+//     };
+
+
+    
+//     if (sortedData.length === 0) {
+//   const alertData = {
+//     openAlert: true,
+//     message: "No data found",
+//     severity: "warning",
+//     duration: 2000,
+//   };
+//   showAlert(alertData);
+// }
+//   }
+ 
+// };
 
 // const handleExcelUpload = async (token, event, showAlert, setIsLoading) => {
 //   const file = event.target.files[0];
@@ -447,17 +530,19 @@ const getTotalLeadsCount = async (
     );
 
     const data = await response.json();
-    // console.log({ data });
+console.log("Total Leads API Response:", data);
 
     if (response.ok) {
       setLeadsCount(data.leads);
       setBlacklistedCount(data.blacklistedcount);
+      
     } else {
       // console.log("Error fetching total leads count:", data.error);
     }
   } catch (error) {
     // console.log("Error fetching total leads count:", error);
   }
+  
 };
 
 // // Get total count of blacklisted leads

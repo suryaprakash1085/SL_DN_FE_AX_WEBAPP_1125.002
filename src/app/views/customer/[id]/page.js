@@ -117,6 +117,8 @@ export default function CustomerDetail() {
 
   // Backend Data states
   const [customer, setCustomer] = useState();
+  const [refresh, setRefresh] = useState(false);
+
 
   // FrontEnd form input states
   const [gstCustomer, setGstCustomer] = useState(false);
@@ -217,10 +219,10 @@ export default function CustomerDetail() {
   }, []);
 
   useEffect(() => {
-    if (!id || !token) {
-      setLoading(false);
-      return;
-    }
+ const storedToken = Cookies.get("token");
+  if (!storedToken) return;
+
+  setToken(storedToken);
 
     fetchCustomerDetails(
       token,
@@ -245,7 +247,7 @@ export default function CustomerDetail() {
       setEngineNumber,
       setLeadOwner
     );
-  }, [id, token]);
+}, [token, id, refresh]);   // 👈 refresh triggers auto re-fetch
 
   useEffect(() => {
     if (customer) {
@@ -271,6 +273,22 @@ export default function CustomerDetail() {
     }));
     setStates(statesData);
   }, []);
+
+  // Reset vehicle form when opening modal in add mode (prevents stale values)
+  useEffect(() => {
+    if (modalOpen && !isEditing) {
+      setIsPlateNumberHidden(false);
+      setFuelType("");
+      setPlateNumber("");
+      setMake("");
+      setModel("");
+      setYear("");
+      setVin("");
+      setEngineNumber("");
+      setChassisNumber("");
+      setRegistrationDate("");
+    }
+  }, [modalOpen, isEditing]);
 
   const handleMakeChange = (value) => {
     setMake(value);
@@ -400,15 +418,31 @@ export default function CustomerDetail() {
       leads_owner: formData.leads_owner,
     };
     updateCustomer(
-      token,
-      customer.customer_id,
-      newCustomerDetails,
-      setCustomer,
-      setSnackbarOpen,
-      setSnackbarMessage,
-      setSnackbarSeverity,
-      setCustomerEditModalOpen
-    );
+  token,
+  customer.customer_id,
+  newCustomerDetails,
+  setCustomer,
+  setSnackbarOpen,
+  setSnackbarMessage,
+  setSnackbarSeverity,
+  setCustomerEditModalOpen,
+  setGstCustomer,
+  setGstNumber,
+  setCustomerName,
+  setPrefix,
+  setPhone,
+  setEmail,
+  setStreet,
+  setCity,
+  setState,
+  setPinCode,
+  setRefer,
+  setReferBy,
+  setLeadOwner
+).then(()=>{
+  setRefresh(prev => !prev); 
+});
+
   };
 
   // Function to handle Add Counter Sale button click
@@ -1095,6 +1129,9 @@ export default function CustomerDetail() {
                   setSnackbarMessage,
                   setSnackbarSeverity,
                   setModalOpen,
+                   registrationDate,
+                  chassisNumber,     
+                  engineNumber, 
                   setGstCustomer,
                   setGstNumber,
                   setLoading,

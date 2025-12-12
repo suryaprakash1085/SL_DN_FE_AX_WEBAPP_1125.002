@@ -60,21 +60,17 @@ import LoadingScreen from "@/components/loadingScreen.js";
 export default function Inventory() {
   const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    const storedToken = Cookies.get("token");
-    setToken(storedToken);
-  }, []);
 
   const [rows, setRows] = useState([
-    {
-      inventory_id: "",
-      part_name: "",
-      part_number: "",
-      description: "",
-      category: "",
-      quantity: "",
-      price: "",
-    },
+    // {
+    //   inventory_id: "",
+    //   part_name: "",
+    //   part_number: "",
+    //   description: "",
+    //   category: "",
+    //   quantity: "",
+    //   price: "",
+    // },
   ]);
 
   const [editRowId, setEditRowId] = useState(null);
@@ -161,75 +157,126 @@ export default function Inventory() {
   });
 
   // const filteredRows = filterRows(rows, searchQuery, filterType);
-
   useEffect(() => {
-    const storedToken = Cookies.get("token");
+  const storedToken = Cookies.get("token");
+  if (!storedToken) return;
+  setToken(storedToken);
+}, []);
 
-    const getLimit = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/ss`;
-        // console.log("Fetching data from:", url);
+useEffect(() => {
+  if (!token) return; // wait until token is set
 
-        const response = await fetch(url, {
-          method: "GET",
+  const getLimit = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ss`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data.company_details?.[0]?.fetch_limit;
+    } catch (err) {
+      console.error("Error fetching limit:", err);
+      return 10; 
+    }
+  };
+
+  const fetchInventory = async (lim) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
-        });
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
         }
+      );
 
-        const data = await response.json();
-        return data.company_details[0]?.fetch_limit;
-      } catch (error) {
-        console.error("Error fetching limit:", error);
-        return null; // Handle the error gracefully
-      }
-    };
-    // Call the function and log the result
-    getLimit().then((lim) => {
-      setLimit(lim);
-      fetchInventory(lim);
-    });
-
-    async function fetchInventory(lim) {
-      console.log({ lim });
-      try {
-        if (!token) {
-          throw new Error("No token found. Please log in.");
-        }
-
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch entries");
-
-        const data = await response.json();
-        setRows(data);
-
-        // setFilteredEntries(data);
-        setIsLoading(false);
-      } catch (err) {
-        // setError(err.message);
-        // setSnackbarMessage(err.message); // Set error message for Snackbar
-        // setOpenSnackbar(true); // Show Snackbar with error message
-        // setLoading(false);
-      }
+      const data = await response.json();
+      setRows(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching inventory:", err);
     }
-    if (token) {
-      fetchInventory();
-    }
-  }, [token]);
+  };
+
+  (async () => {
+    const lim = await getLimit();
+    setLimit(lim);
+    fetchInventory(lim);   // ONLY ONE CALL
+  })();
+}, [token]);
+
+
+  // useEffect(() => {
+  //   const storedToken = Cookies.get("token");
+
+  //   const getLimit = async () => {
+  //     try {
+  //       const url = `${process.env.NEXT_PUBLIC_API_URL}/ss`;
+  //       // console.log("Fetching data from:", url);
+
+  //       const response = await fetch(url, {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`API error: ${response.status}`);
+  //       }
+
+  //       const data = await response.json();
+  //       return data.company_details[0]?.fetch_limit;
+  //     } catch (error) {
+  //       console.error("Error fetching limit:", error);
+  //       return null; // Handle the error gracefully
+  //     }
+  //   };
+  //   // Call the function and log the result
+  //   getLimit().then((lim) => {
+  //     setLimit(lim);
+  //     fetchInventory(lim);
+  //   });
+
+  //   async function fetchInventory(lim) {
+  //     console.log({ lim });
+  //     try {
+  //       if (!token) {
+  //         throw new Error("No token found. Please log in.");
+  //       }
+
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_API_URL}/inventory/?limit=${lim}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       if (!response.ok) throw new Error("Failed to fetch entries");
+
+  //       const data = await response.json();
+  //       setRows(data);
+
+  //       // setFilteredEntries(data);
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       // setError(err.message);
+  //       // setSnackbarMessage(err.message); // Set error message for Snackbar
+  //       // setOpenSnackbar(true); // Show Snackbar with error message
+  //       // setLoading(false);
+  //     }
+  //   }
+  //   if (token) {
+  //     fetchInventory();
+  //   }
+  // }, [token]);
 
   // useEffect(() => {
   //   async function fetchUomData() {
@@ -611,30 +658,40 @@ export default function Inventory() {
                 maxHeight: "70vh",
                 // height:"80vh",
                 overflowY: "auto",
-              }}
+                overflowX: "auto",
+              }}  
               onScroll={(event) => {
                 scrollToTopButtonDisplay(event, setShowFab);
+                
+  const target = event.target;
+
+  // Check if user reached bottom of container
+  const isBottom =
+    target.scrollHeight - target.scrollTop <= target.clientHeight + 10;
+
+                if (isBottom && !isLoading && hasMore) {
                 infiniteScroll(
-                  event,
+                  
                   token,
                   setRows,
                   searchQuery,
                   limit,
-                  isLoading,
+                  
                   setIsLoading,
-                  hasMore,
+                 
                   setHasMore,
                   offset,
                   setOffset
-                );
+                );}
               }}
             >
               <Table>
                 <TableHead
                   style={{
-                    position: "sticky",
-                    top: 0,
-                    backgroundColor: "white",
+                     position: "sticky",
+    top: 0,
+    backgroundColor: "#fff",
+    zIndex: 20,  
                   }}
                 >
                   <TableRow>
@@ -645,17 +702,20 @@ export default function Inventory() {
                     </TableCell>
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+
                     >
                       Category
                     </TableCell>
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      className="whitespace-nowrap overflow-hidden text-ellipsis"
                     >
                       Name
                     </TableCell>
 
                     <TableCell
                       sx={{ padding: "10px 16px", fontWeight: "bold" }}
+                      className="overflow-hidden text-ellipsis line-clamp-2"
                     >
                       Description
                     </TableCell>
@@ -665,8 +725,17 @@ export default function Inventory() {
                     <TableCell sx={{ padding: "10px 16px" }}>Price</TableCell> */}
                     <TableCell sx={{ padding: "10px 16px" }}>UOM</TableCell>
                     <TableCell
-                      sx={{ padding: "10px 16px", fontWeight: "bold" }}
-                    >
+   sx={{   padding: "10px 16px",
+    fontWeight: "bold",
+    whiteSpace: "nowrap",
+    width: 120,
+    minWidth: 120,
+    maxWidth: 120,
+    position: "sticky",
+    right: 0,
+    backgroundColor: "white",
+    zIndex: 6,
+  }}  >
                       Actions
                     </TableCell>
                   </TableRow>
@@ -846,7 +915,8 @@ export default function Inventory() {
                           )}
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell
+                         sx={{ padding: "10px 16px",fontWeight: "bold",maxWidth: 150, overflow: "hidden",textOverflow: "ellipsis",whiteSpace: "nowrap"}}>
                           {editRowId === row.inventory_id ? (
                             <TextField
                               name="part_name"
@@ -861,7 +931,7 @@ export default function Inventory() {
                           )}
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell   sx={{ padding: "10px 16px",maxWidth: 250,overflow: "hidden",textOverflow: "ellipsis",whiteSpace: "nowrap",}} >
                           {editRowId === row.inventory_id ? (
                             <TextField
                               name="description"
@@ -929,7 +999,7 @@ export default function Inventory() {
                           
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell   sx={{whiteSpace: "nowrap", width: "110px",minWidth: "110px", maxWidth: "110px", }}>
                           {editRowId === row.inventory_id ? (
                             <>
                               <IconButton
@@ -969,9 +1039,10 @@ export default function Inventory() {
                             </>
                           ) : (
                             <>
+                            <Box sx={{ display: "inline-flex", gap: 0.5 }}>
                               <Tooltip title="Edit">
                                 <IconButton
-                                  disabled={editRowId}
+                                  disabled={editRowId!= null }
                                   onClick={() =>
                                     handleEditClick(
                                       row,
@@ -985,7 +1056,9 @@ export default function Inventory() {
                               </Tooltip>
                               <Tooltip title="Delete">
                                 <IconButton
-                                  disabled={editRowId ? true : false}
+                                  // disabled={editRowId ? true : false}
+                                      disabled={editRowId !== null}
+
                                   onClick={() =>
                                     handleDeleteClick(
                                       row.inventory_id,
@@ -997,6 +1070,7 @@ export default function Inventory() {
                                   <DeleteIcon />
                                 </IconButton>
                               </Tooltip>
+                              </Box>
                             </>
                           )}
                         </TableCell>
@@ -1048,19 +1122,36 @@ export default function Inventory() {
             Cancel
           </Button>
           <Button
-            onClick={() => {
-              let deleted = confirmDelete(
-                token,
-                setRows,
-                deleteRowId,
-                setOpenDeleteDialog,
-                setShowError,
-                setErrorMessage,
-                setErrorSeverity
-              );
+            // onClick={() => {
+            //   let deleted = confirmDelete(
+            //     token,
+            //     setRows,
+            //     deleteRowId,
+            //     setOpenDeleteDialog,
+            //     setShowError,
+            //     setErrorMessage,
+            //     setErrorSeverity
+            //   );
 
-              deleted ? location.reload() : null;
-            }}
+            //   deleted ? location.reload() : null;
+            // }}
+             onClick={async () => {
+    const deleted = await confirmDelete(
+      token,
+      setRows,
+      deleteRowId,
+      setOpenDeleteDialog,
+      setShowError,
+      setErrorMessage,
+      setErrorSeverity
+    );
+
+    if (deleted) {
+         
+      // optional: reload if needed
+      // location.reload();
+    }
+  }}
             color="error"
           >
             Confirm

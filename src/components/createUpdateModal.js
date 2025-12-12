@@ -177,6 +177,10 @@ export default function CreateUpdateModal({
     // }
 
     // Validation for number fields or phone
+
+     if (key.toLowerCase().includes("name")) {
+    value = value.replace(/[^a-zA-Z\s]/g, ""); // Allow only alphabets and spaces
+  }
     if (key.toLowerCase().includes("phone" || "number")) {
       value = value.replace(/[^0-9]/g, "").slice(0, 10); // Allow only numbers, max length 10
     }
@@ -284,9 +288,11 @@ export default function CreateUpdateModal({
     }
 
     //  Check Phone Number
-    if (!formData.phone) {
-      errors.push("Phone Number is required");
-    }
+  if (!formData.phone) {
+  errors.push("Phone Number is required");
+} else if (formData.phone.length !== 10) {
+  errors.push("Phone Number must be exactly 10 digits");
+}
 
     //  Check State
     if (!selectedState) {

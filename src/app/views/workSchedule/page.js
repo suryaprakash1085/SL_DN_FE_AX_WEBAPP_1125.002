@@ -224,6 +224,7 @@ export default function WorkSchedule() {
                   label="Employee Name"
                   margin="dense"
                   fullWidth
+                  disabled={isEditMode}
                 />
               )}
             />

@@ -174,6 +174,8 @@ export default function TimeReport() {
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() =>
+                            // console.log("BUTTON CLICKED: Search button clicked");
+
                           handleSearch(searchQuery, usersData, setFilteredUsers)
                         }
                       >
