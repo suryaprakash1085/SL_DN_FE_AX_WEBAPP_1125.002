@@ -90,18 +90,27 @@ export default function GeneralChat({ isChatOpen }) {
 
   async function fetchMessages() {
     const token = Cookies.get("token");
-    const response1 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chats`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      const response1 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chats`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    const data = await response1.json();
-    setMessages(data.chats);
+      if (!response1.ok) {
+        console.error(`Failed to fetch messages: ${response1.status} ${response1.statusText}`);
+        return;
+      }
+
+      const data = await response1.json();
+      setMessages(data.chats || []);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
   }
   // useEffect and other React Hooks
   useEffect(() => {
@@ -157,8 +166,13 @@ export default function GeneralChat({ isChatOpen }) {
                 body: JSON.stringify(data),
               }
             );
+
+            if (!response.ok) {
+              console.error(`Failed to send message: ${response.status} ${response.statusText}`);
+              return;
+            }
           } catch (error) {
-            console.log("Error sending message:", error);
+            console.error("Error sending message:", error);
           }
         }
 
@@ -177,19 +191,29 @@ export default function GeneralChat({ isChatOpen }) {
   // Fetch users when component mounts
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/users`,{
-          method: "GET", // Ensure method is specified
-          headers: {
-            Authorization: `Bearer ${token}`, // Added Authorization header
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/users`,{
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+          return;
         }
-      );
-      const data = await response.json();
-      setUsers(data); // Set users to the fetched data
+
+        const data = await response.json();
+        setUsers(data || []);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
     fetchUsers();
-  }, []);
+  }, [token]);
 
   // UI Code
   return (

@@ -33,6 +33,7 @@ let order = [
   "Time Entry",
   "Time Report",
   "Gallery",
+  "UDV",
 ];
 
 export default function Sidebar() {
