@@ -554,7 +554,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -567,7 +566,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -580,7 +578,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -593,7 +590,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -606,7 +602,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -619,7 +614,6 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 2,
                           backgroundColor: "white",
-                          fontWeight: "bold",
                           minWidth: "120px",
                           whiteSpace: "nowrap",
                         }}
@@ -633,9 +627,10 @@ export default function UserManagement() {
                           top: 0,
                           zIndex: 3,
                           backgroundColor: "white",
+                        textAlign: "center",
                         }}
                       >
-                        Actions
+                        Action
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -828,7 +823,7 @@ export default function UserManagement() {
                             <div
                               style={{
                                 display: "flex",
-                                justifyContent: "flex-end",
+                                justifyContent: "center",
                               }}
                             >
                               <Tooltip title="Cancel">
@@ -852,7 +847,7 @@ export default function UserManagement() {
                             <div
                               style={{
                                 display: "flex",
-                                justifyContent: "flex-end",
+                                justifyContent: "center",
                               }}
                             >
                               <Tooltip title="Edit">
