@@ -374,6 +374,8 @@ export default function Feedback() {
                             paddingBottom: 1,
                           }}
                         >
+
+                          
                           <b>Vehicle:</b> {feedback.vehicle_id} {feedback.make}(
                           {feedback.model})
                         </Box>
