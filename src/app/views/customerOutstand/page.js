@@ -477,48 +477,67 @@ export default function CustomerOutstand() {
               style={{
                 maxHeight: "70vh",
                 overflowY: "auto",
+                overflowX: "auto",
               }}
               onScroll={(event) => {
                 scrollToTopButtonDisplay(event, setShowFab);
               }}
             >
-              <Table stickyHeader>
+              <Table 
+                stickyHeader
+                sx={{
+                  minWidth: 1200,
+                  tableLayout: "fixed",
+                  width: "100%",
+                }}
+              >
                 <TableHead
                   style={{
                     position: "sticky",
                     top: 0,
                     backgroundColor: "white",
+                    zIndex: 2,
                   }}
                 >
                   <TableRow>
                     {/* <TableCell sx={{ backgroundColor: "pink" }}>
                       <b>Invoice Date</b>
                     </TableCell> */}
-                    <TableCell sx={{ backgroundColor: "pink" }}>
+                    <TableCell sx={{ backgroundColor: "pink", width: "15%", minWidth: "150px" }}>
                       <b>Customer</b>
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: "pink" }}>
+                    <TableCell sx={{ backgroundColor: "pink", width: "12%", minWidth: "120px" }}>
                       <b>Phone</b>
                     </TableCell>
                     {/* <TableCell sx={{ backgroundColor: "pink" }} align="right">
                         <b>Customer Advance Amount</b>
                       </TableCell> */}
-                    <TableCell sx={{ backgroundColor: "pink" }} align="right">
+                    <TableCell sx={{ backgroundColor: "pink", width: "16%", minWidth: "160px" }} align="right">
                       <b>Customer Invoice Amount</b>
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: "pink" }} align="right">
+                    <TableCell sx={{ backgroundColor: "pink", width: "16%", minWidth: "160px" }} align="right">
                       <b>Customer Pending Amount</b>
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: "pink" }} align="right">
+                    <TableCell sx={{ backgroundColor: "pink", width: "16%", minWidth: "160px" }} align="right">
                       <b>Customer Paid Amount</b>
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: "pink" }}>
+                    <TableCell sx={{ backgroundColor: "pink", width: "10%", minWidth: "100px" }} align="center">
                       <b>Status</b>
                     </TableCell>
                     {/* <TableCell sx={{ backgroundColor: "pink" }}>
                       <b>Number of Days</b>
                     </TableCell> */}
-                    <TableCell sx={{ backgroundColor: "pink" }}>
+                    <TableCell 
+                      sx={{ 
+                        backgroundColor: "pink", 
+                        width: "15%", 
+                        minWidth: "150px",
+                        position: "sticky",
+                        right: 0,
+                        zIndex: 3,
+                      }} 
+                      align="center"
+                    >
                       <b>Pay Now</b>
                     </TableCell>
                   </TableRow>
@@ -527,26 +546,53 @@ export default function CustomerOutstand() {
                   {filteredData.map((row, index) => (
                     <TableRow key={index}>
                       {/* <TableCell>{row.invoiceDate.split("-").reverse().join("/")}</TableCell> */}
-                      <TableCell>{row.customer}</TableCell>
-                      <TableCell>{row.phone}</TableCell>
+                      <TableCell sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "15%" }}>
+                        {row.customer}
+                      </TableCell>
+                      <TableCell sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "12%" }}>
+                        {row.phone}
+                      </TableCell>
                       {/* <TableCell align="right">{parseFloat(row.advance_balance).toFixed(2)}</TableCell> */}
-                      <TableCell align="right">₹{parseFloat(row.invoiceAmount).toFixed(2).toString()}</TableCell>
-                      <TableCell align="right">₹{Math.max(0, parseFloat(row.pendingAmount)).toFixed(2)}</TableCell>
-                      <TableCell align="right">₹{parseFloat(row.paidAmount).toFixed(2)}</TableCell>
-                      <TableCell>{row.status}</TableCell>
+                      <TableCell align="right" sx={{ width: "16%" }}>₹{parseFloat(row.invoiceAmount).toFixed(2).toString()}</TableCell>
+                      <TableCell align="right" sx={{ width: "16%" }}>₹{Math.max(0, parseFloat(row.pendingAmount)).toFixed(2)}</TableCell>
+                      <TableCell align="right" sx={{ width: "16%" }}>₹{parseFloat(row.paidAmount).toFixed(2)}</TableCell>
+                      <TableCell align="center" sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "10%" }}>
+                        {row.status}
+                      </TableCell>
                       {/* showing pay now button only if pending amount is greater than 0 */}
                       {row.pendingAmount > 0 ? (
-                        <TableCell>
+                        <TableCell 
+                          align="center" 
+                          sx={{ 
+                            padding: "8px 12px",
+                            width: "15%",
+                            position: "sticky",
+                            right: 0,
+                            backgroundColor: "white",
+                            zIndex: 1,
+                          }}
+                        >
                           <Button
                             variant="outlined"
                             size="small"
+                            sx={{ minWidth: "100px", maxWidth: "120px" }}
                             onClick={() => router.push(`/views/finance/customerPayment/?id=${row.customer_id}`)}
                           >
                             Pay Now
                           </Button>
                         </TableCell>
                       ) : (
-                        <TableCell>
+                        <TableCell 
+                          align="center" 
+                          sx={{ 
+                            padding: "8px 12px",
+                            width: "15%",
+                            position: "sticky",
+                            right: 0,
+                            backgroundColor: "white",
+                            zIndex: 1,
+                          }}
+                        >
                           <RemoveRedEyeIcon
                             style={{ cursor: "pointer" }}
                             variant="outlined"
