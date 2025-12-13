@@ -629,7 +629,7 @@ const filterStyle = {
               </Tooltip>
 
               {/* //? Download Template Button */}
-              <Tooltip title="Download Template">
+              {/* <Tooltip title="Download Template">
                 <IconButton
                   aria-label="downloadTemplate"
                   href="/Auto_Doc_Cockpit_CUST-Template.xlsx"
@@ -644,10 +644,10 @@ const filterStyle = {
                 >
                   <FileDownloadIcon fontSize="small" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
 
               {/* //? Upload Leads Button */}
-              <Tooltip title="Upload Leads">
+              {/* <Tooltip title="Upload Leads">
                 <Button
                   component="label"
                   role={undefined}
@@ -685,7 +685,7 @@ const filterStyle = {
                     multiple
                   />
                 </Button>
-              </Tooltip>
+              </Tooltip> */}
 
               {/* //? Open Custom Modal Button */}
               {/* <Button onClick={handleOpenCustomModal}>Open Modal</Button> */}
