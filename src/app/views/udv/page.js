@@ -431,7 +431,9 @@ export default function UDVMaster() {
                   <Typography variant="h6">
                     Upload Status History
                   </Typography>
-                  <Button
+                  
+                  {/* this line delete in Upload Status History data*/}
+                  {/* <Button
                     size="small"
                     variant="outlined"
                     color="error"
@@ -467,7 +469,7 @@ export default function UDVMaster() {
                     }}
                   >
                     Clear History
-                  </Button>
+                  </Button> */}
                 </Box>
 
                 <TableContainer component={Paper} variant="outlined">
